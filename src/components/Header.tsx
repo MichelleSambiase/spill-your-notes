@@ -8,7 +8,7 @@ const Header = ({ handleLogout, className }: IHeader) => {
 	return (
 		<div className='flex items-center justify-end md:justify-between md:px-8'>
 			<Title
-				title='Spill your things!'
+				title='Spill your notes!'
 				clasName={`hidden md:flex text-base ${className}`}
 			/>
 			<button
