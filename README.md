@@ -1,4 +1,4 @@
-# Spill your things!
+# Spill your notes!
 
 A web app for your notes!
 
