@@ -1,0 +1,1 @@
+export const VITE_APP_DEV_URL = import.meta.env.VITE_APP_DEV_URL as string || ''

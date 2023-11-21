@@ -1,0 +1,43 @@
+import { INote, NotesColors } from '../types/types'
+import { humanReadable } from '../utils/noteDate'
+
+interface INoteProps extends INote {
+	handleShowNote: () => void
+	isOpenNote: boolean
+}
+const Note = ({
+	date,
+	title,
+	typeOfNote,
+	description,
+	handleShowNote
+}: INoteProps) => {
+	return (
+		<div
+			role='button'
+			onClick={() => handleShowNote()}
+			className={`${NotesColors[typeOfNote]} rounded-md h-full pb-2`}>
+			<div className='h-full   cursor-pointer shadow-sm'>
+				<h1
+					className={`font-medium text-sm p-3  ${
+						typeOfNote === 'workTasks' ? 'text-white' : 'text-[#5F5F5F]'
+					}`}>
+					{title.length > 18 ? title.slice(0, 18) + '...' : title}
+				</h1>
+				<div
+					className={`bg-[#fbfbfb] h-[180px] md:h-[100px] lg:h-[120px] text-sm p-2 flex flex-col justify-between `}>
+					<p className='h-full'>
+						{description.length > 160
+							? description.slice(0, 160) + '...'
+							: description}
+					</p>
+					<p className='text-xs flex justify-end pr-2 text-[#414141] mt-3 font-medium '>
+						{humanReadable(date)}
+					</p>
+				</div>
+			</div>
+		</div>
+	)
+}
+
+export default Note
