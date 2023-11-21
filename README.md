@@ -1,6 +1,6 @@
 # Spill your things!
 
-A web app for your things!
+A web app for your notes!
 
 ## Authors
 
