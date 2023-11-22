@@ -121,7 +121,7 @@ const SignIn = () => {
 	}
 
 	return (
-		<Container className='flex flex-col items-center justify-around'>
+		<Container className='flex flex-col items-center justify-around md:max-w-md'>
 			<Title title='Spill your notes.' clasName='text-2xl text-center' />
 			<img src={signInImage} alt='Imagen ilustrativa' />
 			<ButtonSignInGoogle
