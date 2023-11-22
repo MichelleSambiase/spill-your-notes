@@ -98,7 +98,7 @@ export const mockNotes: INote[] = [
 	{
 		title: 'Aspiradora',
 		description: 'Debo entrena a mi aspiradora así puede limpiar por mi',
-		date: new Date(2023, 10, 1),
+		date: new Date(2023, 10, 15),
 		typeOfNote: 'houseWork',
 		id: 14
 	}
@@ -112,8 +112,8 @@ export const mockNotes: INote[] = [
 	}
 	,
 	{
-		title: 'Título 4',
-		description: 'Descripción 1005',
+		title: 'Inventar nuevo idea',
+		description: 'Creo que estaría bueno poder inventar un idioma nuevo',
 		date: new Date(2015, 10, 18),
 		typeOfNote: 'newIdeas',
 		id: 16

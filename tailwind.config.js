@@ -20,7 +20,7 @@ export default {
 				inputPlaceholder: '#ABABAB',
 				newIdeas: '#B0E9CA',
 				houseWork: '#FDE99D',
-				workTasks: '#35558A',
+				workTasks: '#A9C9FF',
 				personalDiary: '#E0E0E0'
 			}
 		}

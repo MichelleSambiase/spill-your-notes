@@ -19,19 +19,19 @@ const Note = ({
 			className={`${NotesColors[typeOfNote]} rounded-md h-full pb-2`}>
 			<div className='h-full   cursor-pointer shadow-sm'>
 				<h1
-					className={`font-medium text-sm p-3  ${
+					className={`font-medium text-xs p-3  ${
 						typeOfNote === 'workTasks' ? 'text-white' : 'text-[#5F5F5F]'
-					}`}>
-					{title.length > 18 ? title.slice(0, 18) + '...' : title}
+					} truncate md:text-clip`}>
+					{title}
 				</h1>
 				<div
-					className={`bg-[#fbfbfb] h-[180px] md:h-[100px] lg:h-[120px] text-sm p-2 flex flex-col justify-between `}>
+					className={`bg-[#fbfbfb] h-[220px] md:h-[180px] lg:h-[120px] text-sm p-2 flex flex-col justify-between `}>
 					<p className='h-full'>
 						{description.length > 160
 							? description.slice(0, 160) + '...'
 							: description}
 					</p>
-					<p className='text-xs flex justify-end pr-2 text-[#414141] mt-3 font-medium '>
+					<p className='text-xs flex justify-end pr-2 text-[#414141] font-medium '>
 						{humanReadable(date)}
 					</p>
 				</div>

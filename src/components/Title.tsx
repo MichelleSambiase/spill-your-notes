@@ -23,8 +23,8 @@ const Title = ({ title, clasName }: ITitle) => {
 		})
 
 	return (
-		<div className={`md:items-start md:mt-0 font-medium text-3xl  ${clasName}`}>
-			<h1>{colorizedTitle}</h1>
+		<div className={`md:items-start md:mt-0 font-medium  ${clasName}`}>
+			<p>{colorizedTitle}</p>
 		</div>
 	)
 }

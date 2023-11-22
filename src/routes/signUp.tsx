@@ -142,8 +142,8 @@ const SignUp = () => {
 	}
 
 	return (
-		<Container className='flex flex-col items-center h-full justify-around'>
-			<Title title='Spill your things.' clasName='text-xs text-center' />
+		<Container className='flex flex-col items-center h-full justify-around md:max-w-md'>
+			<Title title='Spill your notes.' clasName='text-2xl text-center' />
 			<img src={signUpImage} alt='Imagen ilustrativa ' className='w-52 h-52' />
 			<form action='' className='w-full mt-3 ' onSubmit={handleSubmit}>
 				<Input

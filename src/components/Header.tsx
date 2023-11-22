@@ -9,11 +9,11 @@ const Header = ({ handleLogout, className }: IHeader) => {
 		<div className='flex items-center justify-end md:justify-between md:px-8'>
 			<Title
 				title='Spill your notes!'
-				clasName={`hidden md:flex text-base ${className}`}
+				clasName={`hidden md:flex md:text-xl font-bold ${className}`}
 			/>
 			<button
 				onClick={handleLogout}
-				className={`bg-purple bg-opacity-50 rounded-md p-1 text-darkPurpleText `}>
+				className={`rounded-lg outline-none bg-[#C89CF4] bg-opacity-60 flex items-start justify-center text-sm text-white ring-0 active:ring-[4px] focus:ring-[#535bf22b] focus:ring-opacity-30  transition-all duration-300 p-2 `}>
 				{user.isLoading ? (
 					<p>Cargando...</p>
 				) : (

@@ -38,11 +38,21 @@ const NoteModal = ({
 		if (createNoteValues)
 			setCreateNoteValues?.({ ...createNoteValues, [name]: e.target.value })
 	}
+	console.log(
+		createNoteValues?.titleNote === '' &&
+			createNoteValues?.descriptionNote === ''
+	)
 
 	const handleNewNote = () => {
 		const newId = uuidv4()
+		if (
+			createNoteValues?.titleNote === '' &&
+			createNoteValues?.descriptionNote === ''
+		)
+			return
 
 		setIsOpen(false)
+
 		dispatch(
 			setNote({
 				title: createNoteValues?.titleNote,

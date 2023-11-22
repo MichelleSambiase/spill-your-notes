@@ -146,12 +146,12 @@ const Home = () => {
 
 	return (
 		<>
-			<Container className='w-full relative md:max-w-[800px] h-full flex flex-col lg:max-w-none '>
+			<Container className='w-full relative  h-full flex flex-col lg:max-w-none '>
 				<div className='lg:px-5'>
 					<Header handleLogout={handleLogout} />
 
 					<div className='flex w-full justify-around  items-center md:hidden mt-4'>
-						<Title title='Spill your things.' clasName='md:hidden' />
+						<Title title='Spill your notes.' clasName='md:hidden lg:text-xs' />
 					</div>
 				</div>
 
