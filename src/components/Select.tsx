@@ -3,6 +3,7 @@ import { Listbox, Transition } from '@headlessui/react'
 import { arrowDownIcon } from '../assets/icons'
 import { noteTypes } from '../constant/fieldsValues'
 import { ISelect } from '../types/types'
+import handleAllNotes from './functionComponents/ListboxOptions'
 
 const Select = ({
 	selectedTypeNote,
@@ -37,35 +38,9 @@ const Select = ({
 						static
 						className={`max-h-60  w-full z-50  absolute overflow-auto text-sm rounded-md leading-5 py-2 bg-white  mt-3 border border-solid border-[#ebebeb] outline-none focus:outline-none		 `}>
 						{noteTypes.map((type) =>
-							hasAllNotes ? (
-								<Listbox.Option as='div' key={type.id} value={type}>
-									{({ active, selected }) => (
-										<li
-											className={`p-2 ${
-												active
-													? 'bg-gray-300 bg-opacity-10 text-defaultText font-medium cursor-pointer '
-													: 'bg-white text-black font-medium'
-											} ${selected ? 'font-semibold ' : 'font-normal'}`}>
-											{type.name}
-										</li>
-									)}
-								</Listbox.Option>
-							) : (
-								type.typeOfNote !== 'allNotes' && (
-									<Listbox.Option as='div' key={type.id} value={type}>
-										{({ active, selected }) => (
-											<li
-												className={`p-2 ${
-													active
-														? 'bg-gray-300 bg-opacity-10 text-defaultText font-medium cursor-pointer '
-														: 'bg-white text-black font-medium'
-												} ${selected ? 'font-semibold ' : 'font-normal'}`}>
-												{type.name}
-											</li>
-										)}
-									</Listbox.Option>
-								)
-							)
+							hasAllNotes
+								? handleAllNotes(type)
+								: type.typeOfNote !== 'allNotes' && handleAllNotes(type)
 						)}
 					</Listbox.Options>
 				</Transition>

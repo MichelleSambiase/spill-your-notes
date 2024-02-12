@@ -4,16 +4,22 @@ import { humanReadable } from '../utils/noteDate'
 interface INoteProps extends INote {
 	handleShowNote: () => void
 	isOpenNote: boolean
+	noteRef?: React.LegacyRef<HTMLDivElement>
+	style?: { transition: string | undefined; transform: string | undefined }
 }
 const Note = ({
 	date,
 	title,
 	typeOfNote,
 	description,
-	handleShowNote
+	handleShowNote,
+	noteRef,
+	style
 }: INoteProps) => {
 	return (
 		<div
+			style={style}
+			ref={noteRef}
 			role='button'
 			onClick={() => handleShowNote()}
 			className={`${NotesColors[typeOfNote]} rounded-md h-full pb-2`}>
@@ -27,8 +33,8 @@ const Note = ({
 				<div
 					className={`bg-[#fbfbfb] h-[220px] md:h-[180px] lg:h-[120px] text-sm p-2 flex flex-col justify-between `}>
 					<p className='h-full'>
-						{description.length > 160
-							? description.slice(0, 160) + '...'
+						{description?.length > 160
+							? description?.slice(0, 160) + '...'
 							: description}
 					</p>
 					<p className='text-xs flex justify-end pr-2 text-[#414141] font-medium '>

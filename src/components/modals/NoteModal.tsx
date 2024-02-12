@@ -23,7 +23,8 @@ const NoteModal = ({
 	date,
 	typeOfNote,
 	handleDeleteNote
-}: IDialog) => {
+}: // handleEditNote
+IDialog) => {
 	const [selectedNoteType, setSelectedNoteType] = useState(noteTypes[1])
 
 	const dispatch = useAppDispatch()
@@ -111,16 +112,30 @@ const NoteModal = ({
 										{createNote ? todayDate(date) : humanReadable(date)}
 									</p>
 									{!createNote && (
-										<button
-											onClick={handleDeleteNote}
-											className={` rounded-lg outline-none bg-[#C89CF4] bg-opacity-60 flex items-start justify-center text-sm text-white ring-0 active:ring-[4px] focus:ring-[#535bf22b] focus:ring-opacity-30  transition-all duration-300 p-2`}>
-											Eliminar nota
-										</button>
+										<>
+											<button
+												onClick={handleDeleteNote}
+												className={` rounded-lg outline-none bg-[#C89CF4] bg-opacity-60 flex items-start justify-center text-sm text-white ring-0 active:ring-[4px] focus:ring-[#535bf22b] focus:ring-opacity-30  transition-all duration-300 p-2`}>
+												Eliminar nota
+											</button>
+											{/* <button
+												onClick={handleEditNote}
+												className={` rounded-lg outline-none bg-[#C89CF4] bg-opacity-60 flex items-start justify-center text-sm text-white ring-0 active:ring-[4px] focus:ring-[#535bf22b] focus:ring-opacity-30  transition-all duration-300 p-2`}>
+												Editar nota
+											</button> */}
+										</>
 									)}
 								</div>
 
 								{createNote ? (
 									<>
+										{/* Tipo of note select */}
+										<Select
+											selectedTypeNote={selectedNoteType}
+											setSelectedTypeNote={setSelectedNoteType}
+											typeOfNote={selectedNoteType.typeOfNote}
+											className='mt-5'
+										/>
 										<Input
 											label='Escribe el Título...'
 											name='titleNote'
@@ -128,13 +143,6 @@ const NoteModal = ({
 											value={createNoteValues?.titleNote}
 											className={` mt-6 text-xl font-medium text-[#060606d4] border-t-0 border-x-0 ${animationSelect}`}
 											onChange={handleFormChange}
-										/>
-										{/* Tipo of note select */}
-										<Select
-											selectedTypeNote={selectedNoteType}
-											setSelectedTypeNote={setSelectedNoteType}
-											typeOfNote={selectedNoteType.typeOfNote}
-											className='mt-5'
 										/>
 									</>
 								) : (

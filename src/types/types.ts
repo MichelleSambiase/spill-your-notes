@@ -66,15 +66,15 @@ interface INote {
 	title: string
 	typeOfNote: TypeOfNotes
 	description: string
-	date: Date,
-	id?: number | string
-
+	date: Date
+	id:  string
 } 
 
 
 interface IDialog {
 	isOpen: boolean
 	setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+	handleEditNote?: () => void
 	addNewNoteToHome?: (selectedNoteType: SelectOptions, id: string ) => void | undefined
 	setCreateNoteValues?: React.Dispatch<
 		React.SetStateAction<{

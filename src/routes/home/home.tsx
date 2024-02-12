@@ -17,10 +17,9 @@ import { animationSelect } from '../../constant/theme'
 import { auth } from '../../firebase/auth'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { logoutUser, setLoading, setNote } from '../../redux/userSlice'
+import { addNewNote, handleReadNoteValues } from '../../services/dbNotes'
 import { INote, SelectOptions } from '../../types/types'
-import { mockNotes } from './mock'
 
-let minNotesShow = 0
 const Home = () => {
 	const [isOpen, setIsOpen] = useState(false)
 	const [isOpenNote, setIsOpenNote] = useState(false)
@@ -45,24 +44,22 @@ const Home = () => {
 		setSearch({ ...search, [name]: e.target.value })
 	}
 
-	useEffect(() => {
-		const newBottomRef = bottomRef.current
-		const observer = new IntersectionObserver((entries) => {
-			if (entries[0].isIntersecting) {
-				if (minNotesShow < mockNotes.length) {
-					setNotes(
-						notes.concat(mockNotes.slice(minNotesShow, minNotesShow + 10))
-					)
-					minNotesShow = minNotesShow + 10
-				}
-			}
+	// Show db notes
+	const handleNotes = async () => {
+		handleReadNoteValues().then((res) => {
+			const myNotes = res.docs.map((doc) => ({
+				...doc.data(),
+				id: doc.id
+			}))
+			// @ts-expect-error Don't all the types here, only type 'id'.
+			setNotes(myNotes)
 		})
-		if (bottomRef.current) observer.observe(bottomRef.current)
+	}
 
-		return () => {
-			if (newBottomRef) observer.unobserve(newBottomRef)
-		}
-	}, [notes])
+	useEffect(() => {
+		setLoading(true)
+		handleNotes()
+	}, [])
 
 	// Note filter
 	const filteredNotes = useMemo(() => {
@@ -76,7 +73,7 @@ const Home = () => {
 			selectedNoteType.typeOfNote === 'allNotes'
 				? filterByTitleAndDescription(note)
 				: note.typeOfNote === selectedNoteType.typeOfNote &&
-				  filterByTitleAndDescription(note)
+					filterByTitleAndDescription(note)
 		)
 	}, [search.searchValues, notes, selectedNoteType])
 
@@ -92,6 +89,7 @@ const Home = () => {
 	// Note order
 	const notesSorted = useCallback(() => {
 		const sortedNotes = [...filteredNotes]
+
 		sortedNotes.sort((a, b) => {
 			return Number(new Date(b.date)) - Number(new Date(a.date))
 		})
@@ -114,6 +112,14 @@ const Home = () => {
 
 	// Add new notes
 	const addNewNoteToHome = (selected: SelectOptions, id: string) => {
+		addNewNote({
+			date: createNoteValues.date,
+			description: createNoteValues.descriptionNote,
+			title: createNoteValues.titleNote,
+			typeOfNote: selected.typeOfNote,
+			id: id
+		})
+
 		setNotes(
 			notes.concat({
 				date: createNoteValues.date,
@@ -175,39 +181,47 @@ const Home = () => {
 							hasAllNotes
 						/>
 					</div>
-
-					{notes.length < 0 ? (
-						<p className='text-gray-500 font-medium  absolute top-1/2 left-1/2 -ml-[115px] -mr-[115px] '>
-							Todavia no hay notas, ¡Crea una!{' '}
+					{user.isLoading ? (
+						<p className='text-gray-500 font-medium  absolute top-1/2 left-1/2 -ml-[115px] -mr-[115px]'>
+							Cargando...
 						</p>
 					) : (
-						<div
-							className={`grid grid-cols-2  md:grid-cols-2 lg:grid-rows-2 xl:grid-rows-4 xl:grid-cols-4 gap-5  items-start pb-6  mt-12 md:px-4 ${
-								notes.length > 0 ? 'lg:mt-14' : 'lg:mt-0'
-							}`}>
-							{notesSorted().map((note) => (
-								<Note
-									date={note.date}
-									title={note.title}
-									description={note.description}
-									typeOfNote={note.typeOfNote}
-									handleShowNote={() => {
-										dispatch(
-											setNote({
-												title: note.title,
-												description: note.description,
-												typeOfNote: note.typeOfNote,
-												id: note.id,
-												date: note.date
-											})
-										)
-										setIsOpenNote(true)
-									}}
-									isOpenNote={isOpenNote}
-									key={note.id}
-								/>
-							))}
-						</div>
+						<>
+							{notes.length <= 0 ? (
+								<p className='text-gray-500 font-medium  absolute top-1/2 left-1/2 -ml-[115px] -mr-[115px] '>
+									Todavia no hay notas, ¡Crea una!{' '}
+								</p>
+							) : (
+								<div
+									className={`grid grid-cols-2  md:grid-cols-2 lg:grid-rows-2 xl:grid-rows-4 xl:grid-cols-4 gap-5  items-start pb-6  mt-12 md:px-4 ${
+										notes.length > 0 ? 'lg:mt-14' : 'lg:mt-0'
+									}`}>
+									{notesSorted().map((note) => (
+										<Note
+											date={note.date}
+											title={note.title}
+											description={note.description}
+											typeOfNote={note.typeOfNote}
+											handleShowNote={() => {
+												dispatch(
+													setNote({
+														title: note.title,
+														description: note.description,
+														typeOfNote: note.typeOfNote,
+														id: note.id,
+														date: note.date
+													})
+												)
+												setIsOpenNote(true)
+											}}
+											isOpenNote={isOpenNote}
+											key={note.id}
+											id={note.id}
+										/>
+									))}
+								</div>
+							)}
+						</>
 					)}
 					<div ref={bottomRef} />
 				</div>

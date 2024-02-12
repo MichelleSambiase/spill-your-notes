@@ -2,16 +2,20 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import {
+	createUserWithEmailAndPassword,
+	GoogleAuthProvider,
+	signInWithPopup
+} from 'firebase/auth'
 
 import { signUpImage } from '../assets/images'
 import Container from '../components/Container'
-import { Button, Input, Title } from '../components/index'
+import { Button, ButtonSignInGoogle, Input, Title } from '../components/index'
 import { defaultErrors, formData } from '../constant/fieldsValues'
 import { animationSelect } from '../constant/theme'
 import { auth } from '../firebase/auth'
 import { updateUserProfile } from '../redux/userSlice'
-import { FormRules } from '../types/types'
+import { ButtonLoading, FormRules } from '../types/types'
 import { handleUpdateProfile } from '../utils/updateProfile'
 import { emailValidation } from '../utils/validations'
 
@@ -20,10 +24,16 @@ const revealPassword = {
 	rePassword: false
 }
 
+const buttonLoading: ButtonLoading = {
+	defaultLoading: false,
+	googleLoading: false
+}
+
 const SignUp = () => {
 	const [formValues, setFormValues] = useState(formData)
 	const [error, setError] = useState<FormRules>(defaultErrors)
-	const [loading, setLoading] = useState<boolean>(false)
+	const [loading, setLoading] = useState(buttonLoading)
+
 	const [showPassword, setShowPassword] = useState(revealPassword)
 	const dispatch = useDispatch()
 
@@ -79,11 +89,11 @@ const SignUp = () => {
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-		setLoading(true)
+		setLoading({ ...loading, defaultLoading: true })
 
 		if (!Object.values(formValues).every(Boolean)) {
 			setError({ ...error, errAllFields: 'Todos los campos son requeridos' })
-			setLoading(false)
+			setLoading({ ...loading, defaultLoading: false })
 		} else {
 			setError({ ...error, errAllFields: '' })
 
@@ -130,21 +140,53 @@ const SignUp = () => {
 							})
 						}
 					})
-					.finally(() => setLoading(false))
+					.finally(() => setLoading({ ...loading, defaultLoading: false }))
 			} else {
 				setError({
 					...error,
 					errRepeatPassword: 'Las contraseñas deben coincidir'
 				})
-				setLoading(false)
+				setLoading({ ...loading, defaultLoading: false })
 			}
 		}
+	}
+	const signInWithGoogle = async () => {
+		setLoading({ ...loading, googleLoading: true })
+
+		// Google Login
+		signInWithPopup(auth, new GoogleAuthProvider())
+			.then((res) => {
+				const user = res.user
+
+				// Save user info in state
+				dispatch(
+					updateUserProfile({
+						uid: user.uid,
+						email: user.email,
+						name: user.displayName
+					})
+				)
+				// Redirect to Home
+				navigate('/home')
+			})
+			.catch((error) => console.error(error))
+			.finally(() => setLoading({ ...loading, googleLoading: false }))
 	}
 
 	return (
 		<Container className='flex flex-col items-center h-full justify-around md:max-w-md'>
 			<Title title='Spill your notes.' clasName='text-2xl text-center' />
 			<img src={signUpImage} alt='Imagen ilustrativa ' className='w-52 h-52' />
+			<ButtonSignInGoogle
+				buttonText={
+					loading.googleLoading
+						? 'Iniciando sesión...'
+						: 'Inicia sesion con Google'
+				}
+				isLoading={loading.googleLoading}
+				type='button'
+				handleFunction={signInWithGoogle}
+			/>
 			<form action='' className='w-full mt-3 ' onSubmit={handleSubmit}>
 				<Input
 					label='Nombre Completo'
@@ -204,7 +246,11 @@ const SignUp = () => {
 				<p className='text-center text-xs font-medium text-errorInput mt-5'>
 					{error.errAllFields}
 				</p>
-				<Button isLoading={loading} buttonText='Crear cuenta' type='submit' />
+				<Button
+					isLoading={loading.defaultLoading || loading.googleLoading}
+					buttonText='Crear cuenta'
+					type='submit'
+				/>
 			</form>
 			<button
 				onClick={() => navigate('/signIn')}
