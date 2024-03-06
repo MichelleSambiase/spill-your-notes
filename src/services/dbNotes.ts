@@ -62,12 +62,6 @@ export const handleReadNoteValues = async (email?: string | null) => {
 		const refUsers = doc(db, 'users', email || '')
 		const res = await getDoc(refUsers)
 		
-		console.log(res, 'respuesta de firebase')
-		
-		console.log(res.exists(), 'exist');
-		console.log(res.data(), 'data');
-
-		
 		if (res.exists()) {
 			return res.data()
 		}

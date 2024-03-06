@@ -26,7 +26,7 @@ export const humanReadable = (created_at: string | number | Date) => {
 		case Number(isoDate) === 1:
 			return 'Ayer'
 		case diffDays <= 6:
-			return format(new Date(created_at), 'EEEE', { locale: es })
+			return format(new Date(localeDate), 'EEEE', { locale: es })
 		default:
 			return daysAgo
 	}
