@@ -17,7 +17,11 @@ import { animationSelect } from '../../constant/theme'
 import { auth } from '../../firebase/auth'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { logoutUser, setLoading, setNote } from '../../redux/userSlice'
-import { addNewNote, handleReadNoteValues } from '../../services/dbNotes'
+import {
+	addNewNote,
+	deleteNote,
+	handleReadNoteValues
+} from '../../services/dbNotes'
 import { INote, SelectOptions } from '../../types/types'
 
 const Home = () => {
@@ -38,6 +42,18 @@ const Home = () => {
 	const navigate = useNavigate()
 	const bottomRef = useRef<HTMLDivElement | null>(null)
 
+	useEffect(() => {
+		if (user.user !== null)
+			setTimeout(() => {
+				dispatch(setLoading(false))
+			}, 300)
+	}, [dispatch, user.user])
+
+	useEffect(() => {
+		handleNotes()
+	}, [user.user])
+
+	// Search notes
 	const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const name = e.target.name
 
@@ -45,21 +61,16 @@ const Home = () => {
 	}
 
 	// Show db notes
-	const handleNotes = async () => {
-		handleReadNoteValues().then((res) => {
-			const myNotes = res.docs.map((doc) => ({
-				...doc.data(),
-				id: doc.id
-			}))
-			// @ts-expect-error Don't all the types here, only type 'id'.
-			setNotes(myNotes)
-		})
-	}
+	const handleNotes = () => {
+		handleReadNoteValues(user.user?.email)
+			.then((res) => {
+				const myNotes = res?.notes
 
-	useEffect(() => {
-		setLoading(true)
-		handleNotes()
-	}, [])
+				setNotes(myNotes || [])
+			})
+			.catch((error) => console.log(error))
+			.finally(() => setLoading(false))
+	}
 
 	// Note filter
 	const filteredNotes = useMemo(() => {
@@ -78,7 +89,8 @@ const Home = () => {
 	}, [search.searchValues, notes, selectedNoteType])
 
 	// Delete notes
-	const handleDeleteNote = (id: number | string) => {
+	const handleDeleteNote = (id: string) => {
+		deleteNote(user.user?.email)
 		setNotes(
 			notes.filter((note) => {
 				return note.id !== id
@@ -93,6 +105,7 @@ const Home = () => {
 		sortedNotes.sort((a, b) => {
 			return Number(new Date(b.date)) - Number(new Date(a.date))
 		})
+
 		return sortedNotes
 	}, [filteredNotes])
 
@@ -103,13 +116,6 @@ const Home = () => {
 		navigate('/signIn')
 	}
 
-	useEffect(() => {
-		if (user.user !== null)
-			setTimeout(() => {
-				dispatch(setLoading(false))
-			}, 300)
-	}, [dispatch, user.user])
-
 	// Add new notes
 	const addNewNoteToHome = (selected: SelectOptions, id: string) => {
 		addNewNote({
@@ -117,7 +123,8 @@ const Home = () => {
 			description: createNoteValues.descriptionNote,
 			title: createNoteValues.titleNote,
 			typeOfNote: selected.typeOfNote,
-			id: id
+			id: id,
+			email: user.user?.email
 		})
 
 		setNotes(
@@ -134,7 +141,8 @@ const Home = () => {
 			descriptionNote: '',
 			titleNote: '',
 			typeOfNote: '',
-			date: new Date()
+			date: new Date(),
+			id: ''
 		})
 	}
 

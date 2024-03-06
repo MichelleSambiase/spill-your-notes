@@ -6,7 +6,6 @@ export const humanReadable = (created_at: string | number | Date) => {
 	let localeDate
 
 	if (created_at instanceof Timestamp) {
-		// Si created_at es un Timestamp de Firestore, conviértelo a un objeto Date
 		// If created_at it's an Timestamp from Firestore, convert it to a Date object
 		localeDate = created_at.toDate()
 	} else {

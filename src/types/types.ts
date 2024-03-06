@@ -6,7 +6,7 @@ interface ITitle {
 
 interface IButton {
 	buttonText: string
-	handleFunction?: () => void
+	handleFunction?: (arg: string) => void
 	isLoading?: boolean
 	type: 'submit' | 'reset' | 'button' | undefined
 	icon?: string
@@ -53,7 +53,7 @@ interface IUserSlice {
 	note: {
 		title: string
 		description: string
-		id: number | string
+		id: string
 		typeOfNote?: TypeOfNotes,
 		date: Date | string
 	}
@@ -81,14 +81,16 @@ interface IDialog {
 			titleNote: string
 			descriptionNote: string
 			typeOfNote: string,
-			date: Date 
+			date: Date,
+			id: string
 		}>
 	> 
 	createNoteValues?: {
 		titleNote: string
 		descriptionNote: string
 		typeOfNote: string,
-		date: Date 
+		date: Date,
+		id: string
 	}
 	selectedNoteType?: SelectOptions
 	description: string

@@ -19,7 +19,8 @@ const fieldNoteValues = {
 	titleNote: '',
 	descriptionNote: '',
 	typeOfNote: '',
-	date: new Date()
+	date: new Date(),
+	id: ''
 }
 const searchNoteValues = {
 	searchValues: ''

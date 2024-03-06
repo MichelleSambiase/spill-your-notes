@@ -20,6 +20,7 @@ import { animationSelect } from '../constant/theme'
 import { auth } from '../firebase/auth'
 import { useAppDispatch } from '../redux/hooks'
 import { updateUserProfile } from '../redux/userSlice'
+import { handleReadNoteValues, setCollection } from '../services/dbNotes'
 import { ButtonLoading, FormRules } from '../types/types'
 import { handleUpdateProfile } from '../utils/updateProfile'
 
@@ -61,7 +62,7 @@ const SignIn = () => {
 
 					// Actualizo la info del usuario
 					handleUpdateProfile(auth.currentUser!, formValues.fullName).then(
-						() => {
+						async () => {
 							// Guardar los datos del usuario
 							dispatch(
 								updateUserProfile({
@@ -70,6 +71,14 @@ const SignIn = () => {
 									name: user.displayName
 								})
 							)
+
+							handleReadNoteValues(user.email).then((res) => {
+								if (res?.exists()) {
+									setCollection({
+										email: user.email
+									})
+								}
+							})
 							// Redirecciono a Home
 							navigate('/home')
 						}
@@ -102,7 +111,7 @@ const SignIn = () => {
 
 		// Google Login
 		signInWithPopup(auth, new GoogleAuthProvider())
-			.then((res) => {
+			.then(async (res) => {
 				const user = res.user
 
 				// Save user info in state
@@ -113,6 +122,15 @@ const SignIn = () => {
 						name: user.displayName
 					})
 				)
+
+				handleReadNoteValues(user.email).then((res) => {
+					if (res?.exists()) {
+						setCollection({
+							email: user.email
+						})
+					}
+				})
+
 				// Redirect to Home
 				navigate('/home')
 			})
