@@ -6,7 +6,7 @@ interface ITitle {
 
 interface IButton {
 	buttonText: string
-	handleFunction?: (arg: string) => void
+	handleFunction?: () => void
 	isLoading?: boolean
 	type: 'submit' | 'reset' | 'button' | undefined
 	icon?: string
@@ -46,14 +46,14 @@ interface FormTypes {
 interface IUserSlice {
 	user?: {
 		email: string
-		uid: string
+		uid: string 
 		name: string
 	} | null
 	isLoading?: boolean
 	note: {
 		title: string
 		description: string
-		id: string
+		id: string | number
 		typeOfNote?: TypeOfNotes,
 		date: Date | string
 	}

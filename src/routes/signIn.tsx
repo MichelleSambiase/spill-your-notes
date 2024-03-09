@@ -1,28 +1,16 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import {
-	GoogleAuthProvider,
-	signInWithEmailAndPassword,
-	signInWithPopup
-} from 'firebase/auth'
+import { GoogleAuthProvider } from 'firebase/auth'
 
-import { signInImage } from '../assets/images'
-import {
-	Button,
-	ButtonSignInGoogle,
-	Container,
-	Input,
-	Title
-} from '../components'
-import { defaultErrors, formData } from '../constant/fieldsValues'
-import { animationSelect } from '../constant/theme'
-import { auth } from '../firebase/auth'
-import { useAppDispatch } from '../redux/hooks'
-import { updateUserProfile } from '../redux/userSlice'
-import { handleReadNoteValues, setCollection } from '../services/dbNotes'
-import { ButtonLoading, FormRules } from '../types/types'
-import { handleUpdateProfile } from '../utils/updateProfile'
+import { Button, ButtonSignInGoogle, Container, Input, Title } from '@/components'
+import { defaultErrors, formData } from '@/constant/fieldsValues'
+import { signInImage } from '@/constant/images'
+import { animationSelect } from '@/constant/theme'
+import { auth } from '@/firebase/auth'
+import { useAppDispatch } from '@/redux/hooks'
+import { updateUserProfile } from '@/redux/userSlice'
+import { ButtonLoading, FormRules } from '@/types/types'
 
 const buttonLoading: ButtonLoading = {
 	defaultLoading: false,
@@ -56,13 +44,17 @@ const SignIn = () => {
 			setLoading({ ...loading, defaultLoading: false })
 		} else {
 			// Firebase sign in
-			signInWithEmailAndPassword(auth, formValues.email, formValues.password)
+			import('firebase/auth')
+				.then((module) => module.signInWithEmailAndPassword(auth, formValues.email, formValues.password))
 				.then((userCredential) => {
 					const user = userCredential.user
 
 					// Actualizo la info del usuario
-					handleUpdateProfile(auth.currentUser!, formValues.fullName).then(
-						async () => {
+					import('../utils/updateProfile')
+						.then((module) => {
+							module.handleUpdateProfile(auth.currentUser!, formValues.fullName)
+						})
+						.then(async () => {
 							// Guardar los datos del usuario
 							dispatch(
 								updateUserProfile({
@@ -72,17 +64,20 @@ const SignIn = () => {
 								})
 							)
 
-							handleReadNoteValues(user.email).then((res) => {
-								if (res?.exists()) {
-									setCollection({
-										email: user.email
-									})
-								}
-							})
+							import('@/services/dbNotes').then((module) =>
+								module.handleReadNoteValues(user.email).then((res) => {
+									if (res?.exists()) {
+										import('@/services/dbNotes').then((module) =>
+											module.setCollection({
+												email: user.email
+											})
+										)
+									}
+								})
+							)
 							// Redirecciono a Home
 							navigate('/home')
-						}
-					)
+						})
 				})
 				.catch((error) => {
 					setLoading({ ...loading, defaultLoading: false })
@@ -110,7 +105,8 @@ const SignIn = () => {
 		setLoading({ ...loading, googleLoading: true })
 
 		// Google Login
-		signInWithPopup(auth, new GoogleAuthProvider())
+		import('firebase/auth')
+			.then((module) => module.signInWithPopup(auth, new GoogleAuthProvider()))
 			.then(async (res) => {
 				const user = res.user
 
@@ -123,13 +119,17 @@ const SignIn = () => {
 					})
 				)
 
-				handleReadNoteValues(user.email).then((res) => {
-					if (res?.exists()) {
-						setCollection({
-							email: user.email
-						})
-					}
-				})
+				import('@/services/dbNotes').then((module) =>
+					module.handleReadNoteValues(user.email).then((res) => {
+						if (res?.exists()) {
+							import('@/services/dbNotes').then((module) =>
+								module.setCollection({
+									email: user.email
+								})
+							)
+						}
+					})
+				)
 
 				// Redirect to Home
 				navigate('/home')
@@ -143,11 +143,7 @@ const SignIn = () => {
 			<Title title='Spill your notes.' clasName='text-2xl text-center' />
 			<img src={signInImage} alt='Imagen ilustrativa' />
 			<ButtonSignInGoogle
-				buttonText={
-					loading.googleLoading
-						? 'Iniciando sesión...'
-						: 'Inicia sesion con Google'
-				}
+				buttonText={loading.googleLoading ? 'Iniciando sesión...' : 'Inicia sesion con Google'}
 				isLoading={loading.googleLoading}
 				type='button'
 				handleFunction={signInWithGoogle}
@@ -176,21 +172,11 @@ const SignIn = () => {
 					className={`mt-3 ${animationSelect}`}
 					maxLength={25}
 				/>
-				{error && (
-					<p className='text-center text-xs font-medium text-errorInput mt-5'>
-						{error.errAllFields}
-					</p>
-				)}
+				{error && <p className='text-center text-xs font-medium text-errorInput mt-5'>{error.errAllFields}</p>}
 
-				<Button
-					isLoading={loading.defaultLoading}
-					buttonText='Iniciar sesión'
-					type='submit'
-				/>
+				<Button isLoading={loading.defaultLoading} buttonText='Iniciar sesión' type='submit' />
 			</form>
-			<button
-				onClick={() => navigate('/')}
-				className='text-base font-medium leading-5 text-darkPurpleText mt-10'>
+			<button onClick={() => navigate('/')} className='text-base font-medium leading-5 text-darkPurpleText mt-10'>
 				¿No tienes cuenta? ¡Creála!
 			</button>
 		</Container>

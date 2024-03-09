@@ -3,26 +3,19 @@ import { useNavigate } from 'react-router-dom'
 
 import { signOut } from 'firebase/auth'
 
-import { searchIcon } from '../../assets/icons'
-import { Header, Input, Select, Title } from '../../components'
-import Container from '../../components/Container'
-import NoteModal from '../../components/modals/NoteModal'
-import Note from '../../components/Note'
-import {
-	fieldNoteValues,
-	noteTypes,
-	searchNoteValues
-} from '../../constant/fieldsValues'
-import { animationSelect } from '../../constant/theme'
-import { auth } from '../../firebase/auth'
-import { useAppDispatch, useAppSelector } from '../../redux/hooks'
-import { logoutUser, setLoading, setNote } from '../../redux/userSlice'
-import {
-	addNewNote,
-	deleteNote,
-	handleReadNoteValues
-} from '../../services/dbNotes'
-import { INote, SelectOptions } from '../../types/types'
+import { searchIcon } from '@/assets/icons'
+import { Header, Input, Note, Select, Title } from '@/components'
+import Container from '@/components/Container'
+import NoteModal from '@/components/modals/NoteModal'
+import { fieldNoteValues, noteTypes, searchNoteValues } from '@/constant/fieldsValues'
+import { animationSelect } from '@/constant/theme'
+import { auth } from '@/firebase/auth'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { logoutUser, setLoading, setNote } from '@/redux/userSlice'
+import { addNewNote, deleteNote, handleReadNoteValues } from '@/services/dbNotes'
+import { INote, SelectOptions } from '@/types/types'
+
+// const Note = import('@/components').then((module) => module.Note)
 
 const Home = () => {
 	const [isOpen, setIsOpen] = useState(false)
@@ -75,21 +68,17 @@ const Home = () => {
 	// Note filter
 	const filteredNotes = useMemo(() => {
 		const filterByTitleAndDescription = (note: INote) =>
-			note.title?.toLowerCase().includes(search.searchValues?.toLowerCase()) ||
-			note.description
-				?.toLowerCase()
-				.includes(search.searchValues?.toLowerCase())
+			note.title?.toLowerCase().includes(search.searchValues?.toLowerCase()) || note.description?.toLowerCase().includes(search.searchValues?.toLowerCase())
 
 		return notes.filter((note) =>
 			selectedNoteType.typeOfNote === 'allNotes'
 				? filterByTitleAndDescription(note)
-				: note.typeOfNote === selectedNoteType.typeOfNote &&
-					filterByTitleAndDescription(note)
+				: note.typeOfNote === selectedNoteType.typeOfNote && filterByTitleAndDescription(note)
 		)
 	}, [search.searchValues, notes, selectedNoteType])
 
 	// Delete notes
-	const handleDeleteNote = (id: string) => {
+	const handleDeleteNote = (id: string | number) => {
 		deleteNote(user.user?.email)
 		setNotes(
 			notes.filter((note) => {
@@ -190,15 +179,11 @@ const Home = () => {
 						/>
 					</div>
 					{user.isLoading ? (
-						<p className='text-gray-500 font-medium  absolute top-1/2 left-1/2 -ml-[115px] -mr-[115px]'>
-							Cargando...
-						</p>
+						<p className='text-gray-500 font-medium  absolute top-1/2 left-1/2 -ml-[115px] -mr-[115px]'>Cargando...</p>
 					) : (
 						<>
 							{notes.length <= 0 ? (
-								<p className='text-gray-500 font-medium  absolute top-1/2 left-1/2 -ml-[115px] -mr-[115px] '>
-									Todavia no hay notas, ¡Crea una!{' '}
-								</p>
+								<p className='text-gray-500 font-medium  absolute top-1/2 left-1/2 -ml-[115px] -mr-[115px] '>Todavia no hay notas, ¡Crea una! </p>
 							) : (
 								<div
 									className={`grid grid-cols-2  md:grid-cols-2 lg:grid-rows-2 xl:grid-rows-4 xl:grid-cols-4 gap-5  items-start pb-6  mt-12 md:px-4 ${

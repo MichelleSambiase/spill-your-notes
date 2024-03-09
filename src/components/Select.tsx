@@ -5,18 +5,15 @@ import { noteTypes } from '../constant/fieldsValues'
 import { ISelect } from '../types/types'
 import handleAllNotes from './functionComponents/ListboxOptions'
 
-const Select = ({
-	selectedTypeNote,
-	setSelectedTypeNote,
-	className,
-	hasAllNotes = false
-}: ISelect) => {
+// const handleAllNotes = lazy(() =>
+// 	import('@/components/functionComponents/ListboxOptions').then((module) => {
+// 		return { default: module.default }
+// 	})
+// )
+
+const Select = ({ selectedTypeNote, setSelectedTypeNote, className, hasAllNotes = false }: ISelect) => {
 	return (
-		<Listbox
-			as='div'
-			value={selectedTypeNote}
-			className='relative'
-			onChange={setSelectedTypeNote}>
+		<Listbox as='div' value={selectedTypeNote} className='relative' onChange={setSelectedTypeNote}>
 			<div className='mt-2 md:mt-0'>
 				<span className='inline-block w-full rounded-xl'>
 					<Listbox.Button
@@ -37,11 +34,7 @@ const Select = ({
 					<Listbox.Options
 						static
 						className={`max-h-60  w-full z-50  absolute overflow-auto text-sm rounded-md leading-5 py-2 bg-white  mt-3 border border-solid border-[#ebebeb] outline-none focus:outline-none		 `}>
-						{noteTypes.map((type) =>
-							hasAllNotes
-								? handleAllNotes(type)
-								: type.typeOfNote !== 'allNotes' && handleAllNotes(type)
-						)}
+						{noteTypes.map((type) => (hasAllNotes ? handleAllNotes(type) : type.typeOfNote !== 'allNotes' && handleAllNotes(type)))}
 					</Listbox.Options>
 				</Transition>
 			</div>

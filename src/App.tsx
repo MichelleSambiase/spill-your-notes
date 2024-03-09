@@ -1,14 +1,17 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 
-import { auth } from './firebase/auth'
-import NotFound from './NotFound'
-import ProtectedRoute from './ProtectedRoute'
-import { useAppDispatch } from './redux/hooks'
-import { updateUserProfile } from './redux/userSlice'
-import Home from './routes/home/home'
-import SignIn from './routes/signIn'
-import SignUp from './routes/signUp'
+import { LoadingIcon } from '@/assets/icons'
+import { Title } from '@/components'
+import { auth } from '@/firebase/auth'
+import { useAppDispatch } from '@/redux/hooks'
+import { updateUserProfile } from '@/redux/userSlice'
+
+const Home = lazy(() => import('@/routes/home/home'))
+const SignIn = lazy(() => import('@/routes/signIn'))
+const SignUp = lazy(() => import('@/routes/signUp'))
+const NotFound = lazy(() => import('@/NotFound'))
+const ProtectedRoute = lazy(() => import('@/ProtectedRoute'))
 
 const App = () => {
 	const dispatch = useAppDispatch()
@@ -30,22 +33,36 @@ const App = () => {
 	}, [dispatch])
 
 	return (
-		<Routes>
-			<Route path='/' element={<SignUp />} />
-			<Route path='/signIn' element={<SignIn />} />
-			<Route
-				path='/home'
-				element={
-					<ProtectedRoute>
-						<Home />
-					</ProtectedRoute>
-				}
-			/>
+		<Suspense fallback={<LoadingContent />}>
+			<Routes>
+				<Route path='/' element={<SignUp />} />
+				<Route path='/signIn' element={<SignIn />} />
+				<Route
+					path='/home'
+					element={
+						<ProtectedRoute>
+							<Home />
+						</ProtectedRoute>
+					}
+				/>
 
-			{/* ...other routes */}
-			<Route path='*' element={<NotFound />} />
-		</Routes>
+				{/* ...other routes */}
+				<Route path='*' element={<NotFound />} />
+			</Routes>
+		</Suspense>
 	)
 }
 
 export default App
+
+const LoadingContent = () => {
+	return (
+		<div className='flex flex-col items-center h-full justify-around'>
+			<Title title='Spill your notes.' clasName='text-2xl text-center mt-3' />
+			<div className='flex flex-row w-full items-center justify-center mt-5'>
+				<h3 className='font-medium text-darkPurpleText text-lg'>¡Cargando contenido!</h3>
+				<LoadingIcon stroke='gray' className='ml-2 flex items-center animate-spin w-6 h-6' />
+			</div>
+		</div>
+	)
+}

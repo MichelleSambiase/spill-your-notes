@@ -2,22 +2,17 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import {
-	createUserWithEmailAndPassword,
-	GoogleAuthProvider,
-	signInWithPopup
-} from 'firebase/auth'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 
-import { signUpImage } from '../assets/images'
-import Container from '../components/Container'
-import { Button, ButtonSignInGoogle, Input, Title } from '../components/index'
-import { defaultErrors, formData } from '../constant/fieldsValues'
-import { animationSelect } from '../constant/theme'
-import { auth } from '../firebase/auth'
-import { updateUserProfile } from '../redux/userSlice'
-import { ButtonLoading, FormRules } from '../types/types'
-import { handleUpdateProfile } from '../utils/updateProfile'
-import { emailValidation } from '../utils/validations'
+import Container from '@/components/Container'
+import { Button, ButtonSignInGoogle, Input, Title } from '@/components/index'
+import { defaultErrors, formData } from '@/constant/fieldsValues'
+import { signUpImage } from '@/constant/images'
+import { animationSelect } from '@/constant/theme'
+import { auth } from '@/firebase/auth'
+import { updateUserProfile } from '@/redux/userSlice'
+import { ButtonLoading, FormRules } from '@/types/types'
+import { emailValidation } from '@/utils/validations'
 
 const revealPassword = {
 	password: false,
@@ -59,11 +54,7 @@ const SignUp = () => {
 			case 'email':
 				setError({
 					...error,
-					errEmail: !email
-						? 'El email es requerido.'
-						: !emailValidation.test(email)
-						? 'El email es inválido.'
-						: ''
+					errEmail: !email ? 'El email es requerido.' : !emailValidation.test(email) ? 'El email es inválido.' : ''
 				})
 				break
 			case 'password':
@@ -76,9 +67,7 @@ const SignUp = () => {
 			case 'repeatPassword':
 				setError({
 					...error,
-					errRepeatPassword: !repeatPassword
-						? 'Repite la contraseña, por favor.'
-						: ''
+					errRepeatPassword: !repeatPassword ? 'Repite la contraseña, por favor.' : ''
 				})
 				break
 
@@ -98,17 +87,17 @@ const SignUp = () => {
 			setError({ ...error, errAllFields: '' })
 
 			if (password === repeatPassword) {
-				createUserWithEmailAndPassword(
-					auth,
-					formValues.email,
-					formValues.password
-				)
+				import('firebase/auth')
+					.then((module) => module.createUserWithEmailAndPassword(auth, formValues.email, formValues.password))
 					.then((userCredentials) => {
 						const user = userCredentials.user
 
 						// Actualizo la info del usuario
-						handleUpdateProfile(auth.currentUser!, formValues.fullName).then(
-							() => {
+						import('../utils/updateProfile')
+							.then((module) => {
+								module.handleUpdateProfile(auth.currentUser!, formValues.fullName)
+							})
+							.then(() => {
 								// Guardar los datos del usuario
 								dispatch(
 									updateUserProfile({
@@ -119,8 +108,7 @@ const SignUp = () => {
 								)
 								// Redirecciono a Home
 								navigate('/home')
-							}
-						)
+							})
 					})
 					.catch((error) => {
 						const errorCode = error.code
@@ -128,15 +116,13 @@ const SignUp = () => {
 						if (errorCode === 'auth/email-already-in-use') {
 							setError({
 								...error,
-								errEmail:
-									'El email ya fue registrado, intenta con otro por favor.'
+								errEmail: 'El email ya fue registrado, intenta con otro por favor.'
 							})
 						}
 						if (errorCode === 'auth/weak-password') {
 							setError({
 								...error,
-								errRepeatPassword:
-									'Las contraseñas deben tener al menos 6 caracteres'
+								errRepeatPassword: 'Las contraseñas deben tener al menos 6 caracteres'
 							})
 						}
 					})
@@ -176,13 +162,9 @@ const SignUp = () => {
 	return (
 		<Container className='flex flex-col items-center h-full justify-around md:max-w-md'>
 			<Title title='Spill your notes.' clasName='text-2xl text-center' />
-			<img src={signUpImage} alt='Imagen ilustrativa ' className='w-52 h-52' />
+			{<img src={signUpImage} alt='Imagen ilustrativa ' className='w-52 h-52' />}
 			<ButtonSignInGoogle
-				buttonText={
-					loading.googleLoading
-						? 'Iniciando sesión...'
-						: 'Inicia sesion con Google'
-				}
+				buttonText={loading.googleLoading ? 'Iniciando sesión...' : 'Inicia sesion con Google'}
 				isLoading={loading.googleLoading}
 				type='button'
 				handleFunction={signInWithGoogle}
@@ -217,9 +199,7 @@ const SignUp = () => {
 					error={error.errPassword}
 					onChange={handleFormChange}
 					onBlur={createvalidator}
-					setShowPassword={() =>
-						setShowPassword((prev) => ({ ...prev, password: !prev.password }))
-					}
+					setShowPassword={() => setShowPassword((prev) => ({ ...prev, password: !prev.password }))}
 					showPassword={showPassword.password}
 					className={`mt-3 ${animationSelect}`}
 					maxLength={25}
@@ -243,18 +223,10 @@ const SignUp = () => {
 					maxLength={25}
 				/>
 
-				<p className='text-center text-xs font-medium text-errorInput mt-5'>
-					{error.errAllFields}
-				</p>
-				<Button
-					isLoading={loading.defaultLoading || loading.googleLoading}
-					buttonText='Crear cuenta'
-					type='submit'
-				/>
+				<p className='text-center text-xs font-medium text-errorInput mt-5'>{error.errAllFields}</p>
+				<Button isLoading={loading.defaultLoading || loading.googleLoading} buttonText='Crear cuenta' type='submit' />
 			</form>
-			<button
-				onClick={() => navigate('/signIn')}
-				className='text-base font-medium leading-5 text-darkPurpleText '>
+			<button onClick={() => navigate('/signIn')} className='text-base font-medium leading-5 text-darkPurpleText '>
 				¿Ya tenes una cuenta? ¡Iniciá sesión!
 			</button>
 		</Container>

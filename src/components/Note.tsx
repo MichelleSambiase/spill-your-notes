@@ -8,8 +8,6 @@ interface INoteProps extends INote {
 	style?: { transition: string | undefined; transform: string | undefined }
 }
 const Note = ({ date, title, typeOfNote, description, handleShowNote, noteRef, style }: INoteProps) => {
-	console.log(humanReadable(date))
-
 	return (
 		<div style={style} ref={noteRef} role='button' onClick={() => handleShowNote()} className={`${NotesColors[typeOfNote]} rounded-md h-full pb-2`}>
 			<div className='h-full   cursor-pointer shadow-sm'>
