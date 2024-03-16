@@ -1,11 +1,4 @@
-import {
-	arrayRemove,
-	arrayUnion,
-	doc,
-	getDoc,
-	setDoc,
-	updateDoc,
-} from 'firebase/firestore'
+import { arrayRemove, arrayUnion, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 
 import { db } from '../firebase/auth'
 
@@ -38,14 +31,7 @@ export const setCollection = async ({ email }: IUser) => {
 	}
 }
 // Create and save new note in db
-export const addNewNote = async ({
-	date,
-	description,
-	id,
-	title,
-	typeOfNote,
-	email
-}: INoteData) => {
+export const addNewNote = async ({ date, description, id, title, typeOfNote, email }: INoteData) => {
 	try {
 		const noteRef = await updateDoc(doc(db, 'users', email || ''), {
 			notes: arrayUnion({ id, title, description, typeOfNote, date })
@@ -61,10 +47,8 @@ export const handleReadNoteValues = async (email?: string | null) => {
 	try {
 		const refUsers = doc(db, 'users', email || '')
 		const res = await getDoc(refUsers)
-		
-		if (res.exists()) {
-			return res.data()
-		}
+
+		return res.data()
 	} catch (error) {
 		console.log(error)
 	}
@@ -74,9 +58,8 @@ export const deleteNote = async (email: string | null | undefined) => {
 	try {
 		const deleteRef = doc(db, 'users', email || '')
 		await updateDoc(deleteRef, {
-			 notes: arrayRemove()
-		 })
-		
+			notes: arrayRemove()
+		})
 	} catch (error) {
 		console.error(error)
 	}

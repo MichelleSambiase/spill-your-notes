@@ -1,16 +1,19 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { GoogleAuthProvider } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
 
-import { Button, ButtonSignInGoogle, Container, Input, Title } from '@/components'
-import { defaultErrors, formData } from '@/constant/fieldsValues'
 import { signInImage } from '@/constant/images'
-import { animationSelect } from '@/constant/theme'
-import { auth } from '@/firebase/auth'
-import { useAppDispatch } from '@/redux/hooks'
-import { updateUserProfile } from '@/redux/userSlice'
-import { ButtonLoading, FormRules } from '@/types/types'
+
+import { Button, ButtonSignInGoogle, Container, Input, Title } from '../components'
+import { defaultErrors, formData } from '../constant/fieldsValues'
+import { animationSelect } from '../constant/theme'
+import { auth } from '../firebase/auth'
+import { useAppDispatch } from '../redux/hooks'
+import { updateUserProfile } from '../redux/userSlice'
+import { handleReadNoteValues, setCollection } from '../services/dbNotes'
+import { ButtonLoading, FormRules } from '../types/types'
+import { handleUpdateProfile } from '../utils/updateProfile'
 
 const buttonLoading: ButtonLoading = {
 	defaultLoading: false,
@@ -44,40 +47,31 @@ const SignIn = () => {
 			setLoading({ ...loading, defaultLoading: false })
 		} else {
 			// Firebase sign in
-			import('firebase/auth')
-				.then((module) => module.signInWithEmailAndPassword(auth, formValues.email, formValues.password))
+			signInWithEmailAndPassword(auth, formValues.email, formValues.password)
 				.then((userCredential) => {
 					const user = userCredential.user
 
 					// Actualizo la info del usuario
-					import('../utils/updateProfile')
-						.then((module) => {
-							module.handleUpdateProfile(auth.currentUser!, formValues.fullName)
-						})
-						.then(async () => {
-							// Guardar los datos del usuario
-							dispatch(
-								updateUserProfile({
-									uid: user.uid,
-									email: user.email,
-									name: user.displayName
-								})
-							)
+					handleUpdateProfile(auth.currentUser!, formValues.fullName).then(async () => {
+						// Guardar los datos del usuario
+						dispatch(
+							updateUserProfile({
+								uid: user.uid,
+								email: user.email,
+								name: user.displayName
+							})
+						)
 
-							import('@/services/dbNotes').then((module) =>
-								module.handleReadNoteValues(user.email).then((res) => {
-									if (res?.exists()) {
-										import('@/services/dbNotes').then((module) =>
-											module.setCollection({
-												email: user.email
-											})
-										)
-									}
+						handleReadNoteValues(user.email).then((res) => {
+							if (res) {
+								setCollection({
+									email: user.email
 								})
-							)
-							// Redirecciono a Home
-							navigate('/home')
+							}
 						})
+						// Redirecciono a Home
+						navigate('/home')
+					})
 				})
 				.catch((error) => {
 					setLoading({ ...loading, defaultLoading: false })
@@ -105,8 +99,7 @@ const SignIn = () => {
 		setLoading({ ...loading, googleLoading: true })
 
 		// Google Login
-		import('firebase/auth')
-			.then((module) => module.signInWithPopup(auth, new GoogleAuthProvider()))
+		signInWithPopup(auth, new GoogleAuthProvider())
 			.then(async (res) => {
 				const user = res.user
 
@@ -119,17 +112,15 @@ const SignIn = () => {
 					})
 				)
 
-				import('@/services/dbNotes').then((module) =>
-					module.handleReadNoteValues(user.email).then((res) => {
-						if (res?.exists()) {
-							import('@/services/dbNotes').then((module) =>
-								module.setCollection({
-									email: user.email
-								})
-							)
-						}
-					})
-				)
+				handleReadNoteValues(user.email).then((res) => {
+					console.log('response en inicio de sesion', res)
+
+					if (res) {
+						setCollection({
+							email: user.email
+						})
+					}
+				})
 
 				// Redirect to Home
 				navigate('/home')

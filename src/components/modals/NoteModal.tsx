@@ -21,32 +21,22 @@ const NoteModal = ({
 	createNoteValues,
 	setCreateNoteValues,
 	date,
-	typeOfNote,
-	handleDeleteNote
+	typeOfNote
 }: // handleEditNote
 IDialog) => {
 	const [selectedNoteType, setSelectedNoteType] = useState(noteTypes[1])
 
 	const dispatch = useAppDispatch()
 
-	const handleFormChange = (
-		e:
-			| React.ChangeEvent<HTMLInputElement>
-			| React.ChangeEvent<HTMLTextAreaElement>
-	) => {
+	const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
 		const name = e.target.name
 
-		if (createNoteValues)
-			setCreateNoteValues?.({ ...createNoteValues, [name]: e.target.value })
+		if (createNoteValues) setCreateNoteValues?.({ ...createNoteValues, [name]: e.target.value })
 	}
 
 	const handleNewNote = () => {
 		const newId = uuidv4()
-		if (
-			createNoteValues?.titleNote === '' ||
-			createNoteValues?.descriptionNote === ''
-		)
-			return
+		if (createNoteValues?.titleNote === '' || createNoteValues?.descriptionNote === '') return
 
 		setIsOpen(false)
 
@@ -74,10 +64,7 @@ IDialog) => {
 					leaveFrom='transform scale-100 opacity-100'
 					leaveTo='transform scale-95 opacity-0'
 					as={Fragment}>
-					<div
-						className='fixed top-0 w-full h-full bg-black/30'
-						aria-hidden='true'
-					/>
+					<div className='fixed top-0 w-full h-full bg-black/30' aria-hidden='true' />
 				</Transition.Child>
 				<div className='fixed top-0 left-0  h-full flex items-center justify-center p-4 w-screen overflow-y-auto'>
 					<Transition.Child
@@ -91,33 +78,20 @@ IDialog) => {
 						{/* Panel */}
 						<Dialog.Panel
 							data-testid='container'
-							className={` border-gray-500 rounded-lg shadow-b bg-white  w-full md:max-w-sm ${
-								createNote ? 'p-5' : 'p-3'
-							} `}>
+							className={` border-gray-500 rounded-lg shadow-b bg-white  w-full md:max-w-sm ${createNote ? 'p-5' : 'p-3'} `}>
 							<div className='h-full relative flex flex-col justify-evenly'>
-								<div
-									className={`flex items-center  w-full justify-between ${
-										createNote ? ' mb-3' : 'px-3'
-									} `}>
+								<div className={`flex items-center  w-full justify-between ${createNote ? ' mb-3' : 'px-3'} `}>
 									{/* type of note color */}
-									<div
-										className={`w-[41px] h-2 rounded-xl ${
-											typeOfNote
-												? NotesColors[typeOfNote || 'allNotes']
-												: NotesColors[selectedNoteType.typeOfNote]
-										}`}
-									/>
+									<div className={`w-[41px] h-2 rounded-xl ${typeOfNote ? NotesColors[typeOfNote || 'allNotes'] : NotesColors[selectedNoteType.typeOfNote]}`} />
 
-									<p className='  text-xs  text-[#414141] font-medium'>
-										{createNote ? todayDate(date) : humanReadable(date)}
-									</p>
+									<p className='  text-xs  text-[#414141] font-medium'>{createNote ? todayDate(date) : humanReadable(date)}</p>
 									{!createNote && (
 										<>
-											<button
+											{/* <button
 												onClick={handleDeleteNote}
 												className={` rounded-lg outline-none bg-[#C89CF4] bg-opacity-60 flex items-start justify-center text-sm text-white ring-0 active:ring-[4px] focus:ring-[#535bf22b] focus:ring-opacity-30  transition-all duration-300 p-2`}>
 												Eliminar nota
-											</button>
+											</button> */}
 											{/* <button
 												onClick={handleEditNote}
 												className={` rounded-lg outline-none bg-[#C89CF4] bg-opacity-60 flex items-start justify-center text-sm text-white ring-0 active:ring-[4px] focus:ring-[#535bf22b] focus:ring-opacity-30  transition-all duration-300 p-2`}>
@@ -147,9 +121,7 @@ IDialog) => {
 									</>
 								) : (
 									// Modal title
-									<Dialog.Title className='text-2xl text-[#181818] font-semibold mt-2 break-all'>
-										{title}
-									</Dialog.Title>
+									<Dialog.Title className='text-2xl text-[#181818] font-semibold mt-2 break-all'>{title}</Dialog.Title>
 								)}
 
 								{createNote ? (
@@ -162,11 +134,7 @@ IDialog) => {
 											name='descriptionNote'
 											maxLength={160}
 										/>
-										<Button
-											buttonText='Guardar nota'
-											type='button'
-											handleFunction={handleNewNote}
-										/>
+										<Button buttonText='Guardar nota' type='button' handleFunction={handleNewNote} />
 									</>
 								) : (
 									<>
