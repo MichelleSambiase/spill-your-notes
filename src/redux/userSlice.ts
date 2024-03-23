@@ -8,7 +8,7 @@ const initialState: IUserSlice = {
   note: {
     title: '',
     description: '',
-    id: 0,
+    id: '0',
     typeOfNote: undefined,
     date: new Date().toISOString()
   }
@@ -29,7 +29,6 @@ export const userSlice = createSlice({
     },
     setNote: (state, action) => {
       state.note = action.payload;
-
     }
   }
 })

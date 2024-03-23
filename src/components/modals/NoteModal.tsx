@@ -88,11 +88,6 @@ IDialog) => {
 									{!createNote && (
 										<>
 											{/* <button
-												onClick={handleDeleteNote}
-												className={` rounded-lg outline-none bg-[#C89CF4] bg-opacity-60 flex items-start justify-center text-sm text-white ring-0 active:ring-[4px] focus:ring-[#535bf22b] focus:ring-opacity-30  transition-all duration-300 p-2`}>
-												Eliminar nota
-											</button> */}
-											{/* <button
 												onClick={handleEditNote}
 												className={` rounded-lg outline-none bg-[#C89CF4] bg-opacity-60 flex items-start justify-center text-sm text-white ring-0 active:ring-[4px] focus:ring-[#535bf22b] focus:ring-opacity-30  transition-all duration-300 p-2`}>
 												Editar nota

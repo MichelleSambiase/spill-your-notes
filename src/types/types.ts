@@ -50,23 +50,17 @@ interface IUserSlice {
 		name: string
 	} | null
 	isLoading?: boolean
-	note: {
-		title: string
-		description: string
-		id: string | number
-		typeOfNote?: TypeOfNotes,
-		date: Date | string
-	}
+	note: INote 
 }
 
-type TypeOfNotes = 'houseWork' | 'workTasks' | 'newIdeas' | 'personalDiary' | 'allNotes'
+export type TypeOfNotes = 'houseWork' | 'workTasks' | 'newIdeas' | 'personalDiary' | 'allNotes'
 
 
 interface INote {
 	title: string
-	typeOfNote: TypeOfNotes
+	typeOfNote?: TypeOfNotes
 	description: string
-	date: Date
+	date: Date | string
 	id:  string
 } 
 
@@ -152,7 +146,6 @@ export type {
 	IDialog,
 	ISelect,
 	IHome,
-	TypeOfNotes,
 	SelectOptions,
 	IHeader
 }

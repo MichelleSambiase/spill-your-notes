@@ -113,13 +113,14 @@ const SignIn = () => {
 				)
 
 				handleReadNoteValues(user.email).then((res) => {
-					console.log('response en inicio de sesion', res)
+					console.log(user.email)
+					console.log(res)
 
-					if (res) {
-						setCollection({
-							email: user.email
-						})
-					}
+					// if (res) {
+					setCollection({
+						email: user.email
+					})
+					// }
 				})
 
 				// Redirect to Home

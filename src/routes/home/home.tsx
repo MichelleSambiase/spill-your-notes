@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { closestCorners, DndContext } from '@dnd-kit/core'
+import { closestCorners, DndContext, DndContextProps } from '@dnd-kit/core'
 import { arrayMove, rectSortingStrategy, SortableContext } from '@dnd-kit/sortable'
 import { signOut } from 'firebase/auth'
 
@@ -57,12 +57,13 @@ const Home = () => {
 		handleReadNoteValues(user.user?.email)
 			.then((res) => {
 				if (!res) return
-				setIsLoading(false)
+
 				const myNotes = res?.notes
 				setNotes(myNotes || [])
+				setIsLoading(false)
 			})
 			.catch((error) => console.log(error))
-			.finally(() => setLoading(false))
+			.finally(() => setIsLoading(false))
 	}
 
 	// Note filter
@@ -78,8 +79,10 @@ const Home = () => {
 	}, [search.searchValues, notes, selectedNoteType])
 
 	// Delete notes
-	const handleDeleteNote = (id: string | number) => {
-		deleteNote(user.user?.email)
+	const handleDeleteNote = (id?: string) => {
+		const noteToDelete = notes.find((note) => note.id === id)
+
+		deleteNote(user.user?.email || '', noteToDelete)
 		setNotes(
 			notes.filter((note) => {
 				return note.id !== id
@@ -141,7 +144,7 @@ const Home = () => {
 				title: '',
 				description: '',
 				typeOfNote: undefined,
-				id: '',
+				id: '0',
 				date: new Date().toISOString()
 			})
 		)
@@ -149,14 +152,14 @@ const Home = () => {
 
 	const getNotePosition = (id: string | undefined) => notes.findIndex((note) => note.id === id)
 
-	const handleDragEnd = (e: any) => {
+	const handleDragEnd: DndContextProps['onDragEnd'] = (e) => {
 		const { active, over } = e
 
 		if (active?.id === over?.id) return
 
 		setNotes((note) => {
-			const originalPos = getNotePosition(active?.id)
-			const newPos = getNotePosition(over?.id)
+			const originalPos = getNotePosition(active?.id.toString())
+			const newPos = getNotePosition(over?.id.toString())
 
 			return arrayMove(note, originalPos, newPos)
 		})
@@ -207,33 +210,32 @@ const Home = () => {
 										className={`grid grid-cols-2  md:grid-cols-2 lg:grid-rows-2 xl:grid-rows-4 xl:grid-cols-4 gap-5  items-start pb-6  mt-12 md:px-4 ${
 											notes.length > 0 ? 'lg:mt-14' : 'lg:mt-0'
 										}`}>
-										{notesSorted().map((note) => (
-											<Note
-												date={note.date}
-												title={note.title}
-												description={note.description}
-												typeOfNote={note.typeOfNote}
-												handleShowNote={() => {
-													dispatch(
-														setNote({
-															title: note.title,
-															description: note.description,
-															typeOfNote: note.typeOfNote,
-															id: note.id,
-															date: note.date
-														})
-													)
-													setIsOpenNote(true)
-												}}
-												handleDeleteNote={() => {
-													handleDeleteNote(user.note.id)
-													console.log('llega algo')
-												}}
-												isOpenNote={isOpenNote}
-												key={note.id}
-												id={note.id}
-											/>
-										))}
+										{notesSorted().map((note) => {
+											return (
+												<Note
+													date={note.date}
+													title={note.title}
+													description={note.description}
+													typeOfNote={note.typeOfNote}
+													handleShowNote={() => {
+														dispatch(
+															setNote({
+																title: note.title,
+																description: note.description,
+																typeOfNote: note.typeOfNote,
+																id: note.id,
+																date: note.date
+															})
+														)
+														setIsOpenNote(true)
+													}}
+													handleDeleteNote={handleDeleteNote}
+													isOpenNote={isOpenNote}
+													key={note.id}
+													id={note.id}
+												/>
+											)
+										})}
 									</div>
 								</SortableContext>
 							)}

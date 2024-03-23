@@ -1,5 +1,7 @@
 import { arrayRemove, arrayUnion, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 
+import { INote } from '@/types/types'
+
 import { db } from '../firebase/auth'
 
 interface INoteData {
@@ -33,10 +35,12 @@ export const setCollection = async ({ email }: IUser) => {
 // Create and save new note in db
 export const addNewNote = async ({ date, description, id, title, typeOfNote, email }: INoteData) => {
 	try {
-		const noteRef = await updateDoc(doc(db, 'users', email || ''), {
-			notes: arrayUnion({ id, title, description, typeOfNote, date })
-		})
-		console.log('Documento creado:', noteRef)
+		const noteRef = doc(db, 'users', email || '')
+		const noteData = { id, title, description, typeOfNote, date };
+
+		await updateDoc(noteRef, {
+			notes: arrayUnion(noteData)
+	});
 	} catch (e) {
 		console.error('Error adding document: ', e)
 	}
@@ -47,19 +51,20 @@ export const handleReadNoteValues = async (email?: string | null) => {
 	try {
 		const refUsers = doc(db, 'users', email || '')
 		const res = await getDoc(refUsers)
-
+		
 		return res.data()
 	} catch (error) {
 		console.log(error)
 	}
 }
 
-export const deleteNote = async (email: string | null | undefined) => {
-	try {
+export const deleteNote = async (email: string, note?: INote) => {
+	try {		
 		const deleteRef = doc(db, 'users', email || '')
 		await updateDoc(deleteRef, {
-			notes: arrayRemove()
-		})
+			 notes: arrayRemove(note)
+		 })
+		
 	} catch (error) {
 		console.error(error)
 	}
