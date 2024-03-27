@@ -136,6 +136,8 @@ const Home = () => {
 			date: new Date(),
 			id: ''
 		})
+
+		normalizeNote()
 	}
 
 	const normalizeNote = () => {
@@ -143,7 +145,7 @@ const Home = () => {
 			setNote({
 				title: '',
 				description: '',
-				typeOfNote: undefined,
+				typeOfNote: '',
 				id: '0',
 				date: new Date().toISOString()
 			})
@@ -166,100 +168,101 @@ const Home = () => {
 	}
 
 	return (
-		<DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
-			<Container className='w-full relative  h-full flex flex-col lg:max-w-none '>
-				<div className='lg:px-5'>
-					<Header handleLogout={handleLogout} />
+		<>
+			<DndContext onDragEnd={handleDragEnd} collisionDetection={closestCorners}>
+				<Container className='w-full relative  h-full flex flex-col lg:max-w-none '>
+					<div className='lg:px-5'>
+						<Header handleLogout={handleLogout} />
 
-					<div className='flex w-full justify-around  items-center md:hidden mt-4'>
-						<Title title='Spill your notes.' clasName='md:hidden lg:text-xs' />
-					</div>
-				</div>
-
-				<div className={`w-full h-full flex flex-col `}>
-					<div className='md:flex md:items-center md:justify-evenly w-full mt-10'>
-						<Input
-							label='Buscar notas'
-							type='text'
-							name='searchValues'
-							value={search.searchValues}
-							onChange={handleFormChange}
-							className={`mt-3 text-[#616161] ${animationSelect} md:w-[250px] md:mt-0 lg:w-[300px]`}
-							icon={searchIcon}
-						/>
-
-						<Select
-							selectedTypeNote={selectedNoteType}
-							typeOfNote={selectedNoteType.typeOfNote}
-							setSelectedTypeNote={setSetselectedNoteType}
-							className='mt-5 bg-[#fbfbfb] md:mt-0 md:w-[250px] lg:w-[300px]'
-							hasAllNotes
-						/>
-					</div>
-					{isLoading ? (
-						<div className='w-full h-full flex items-center justify-center'>
-							<img src={loadingSpinner} />
+						<div className='flex w-full justify-around  items-center md:hidden mt-4'>
+							<Title title='Spill your notes.' clasName='md:hidden lg:text-xs' />
 						</div>
-					) : (
-						<>
-							{notes.length <= 0 ? (
-								<p className='text-gray-500 font-medium  absolute top-1/2 left-1/2 -ml-[115px] -mr-[115px] '>Todavia no hay notas, ¡Crea una! </p>
-							) : (
-								<SortableContext items={notes} strategy={rectSortingStrategy}>
-									<div
-										className={`grid grid-cols-2  md:grid-cols-2 lg:grid-rows-2 xl:grid-rows-4 xl:grid-cols-4 gap-5  items-start pb-6  mt-12 md:px-4 ${
-											notes.length > 0 ? 'lg:mt-14' : 'lg:mt-0'
-										}`}>
-										{notesSorted().map((note) => {
-											return (
-												<Note
-													date={note.date}
-													title={note.title}
-													description={note.description}
-													typeOfNote={note.typeOfNote}
-													handleShowNote={() => {
-														dispatch(
-															setNote({
-																title: note.title,
-																description: note.description,
-																typeOfNote: note.typeOfNote,
-																id: note.id,
-																date: note.date
-															})
-														)
-														setIsOpenNote(true)
-													}}
-													handleDeleteNote={handleDeleteNote}
-													isOpenNote={isOpenNote}
-													key={note.id}
-													id={note.id}
-												/>
-											)
-										})}
-									</div>
-								</SortableContext>
-							)}
-						</>
-					)}
+					</div>
 
-					<div ref={bottomRef} />
-				</div>
+					<div className={`w-full h-full flex flex-col `}>
+						<div className='md:flex md:items-center md:justify-evenly w-full mt-10'>
+							<Input
+								label='Buscar notas'
+								type='text'
+								name='searchValues'
+								value={search.searchValues}
+								onChange={handleFormChange}
+								className={`mt-3 text-[#616161] ${animationSelect} md:w-[250px] md:mt-0 lg:w-[300px]`}
+								icon={searchIcon}
+							/>
 
-				<button
-					onClick={() => {
-						setIsOpen(true)
-					}}
-					className='rounded-full w-[60px] h-[60px] bg-[#C89CF4CC] flex justify-center shadow-lg fixed right-0 bottom-0 m-3'>
-					<span className='text-5xl text-white'>+</span>
-				</button>
-			</Container>
+							<Select
+								selectedTypeNote={selectedNoteType}
+								typeOfNote={selectedNoteType.typeOfNote}
+								setSelectedTypeNote={setSetselectedNoteType}
+								className='mt-5 bg-[#fbfbfb] md:mt-0 md:w-[250px] lg:w-[300px]'
+								hasAllNotes
+							/>
+						</div>
+						{isLoading ? (
+							<div className='w-full h-full flex items-center justify-center'>
+								<img src={loadingSpinner} />
+							</div>
+						) : (
+							<>
+								{notes.length <= 0 ? (
+									<p className='text-gray-500 font-medium  absolute top-1/2 left-1/2 -ml-[115px] -mr-[115px] '>Todavia no hay notas, ¡Crea una! </p>
+								) : (
+									<SortableContext items={notes} strategy={rectSortingStrategy}>
+										<div
+											className={`grid grid-cols-2  md:grid-cols-2 lg:grid-rows-2 xl:grid-rows-4 xl:grid-cols-4 gap-5  items-start pb-6  mt-12 md:px-4 ${
+												notes.length > 0 ? 'lg:mt-14' : 'lg:mt-0'
+											}`}>
+											{notesSorted().map((note) => {
+												return (
+													<Note
+														date={note.date}
+														title={note.title}
+														description={note.description}
+														typeOfNote={note.typeOfNote}
+														handleShowNote={() => {
+															dispatch(
+																setNote({
+																	title: note.title,
+																	description: note.description,
+																	typeOfNote: note.typeOfNote,
+																	id: note.id,
+																	date: note.date
+																})
+															)
+															setIsOpenNote(true)
+														}}
+														handleDeleteNote={handleDeleteNote}
+														isOpenNote={isOpenNote}
+														key={note.id}
+														id={note.id}
+													/>
+												)
+											})}
+										</div>
+									</SortableContext>
+								)}
+							</>
+						)}
+
+						<div ref={bottomRef} />
+					</div>
+
+					<button
+						onClick={() => {
+							setIsOpen(true)
+						}}
+						className='rounded-full w-[60px] h-[60px] bg-[#C89CF4CC] flex justify-center shadow-lg fixed right-0 bottom-0 m-3'>
+						<span className='text-5xl text-white'>+</span>
+					</button>
+				</Container>
+			</DndContext>
 
 			{/* Show note modal */}
 			<NoteModal
 				isOpen={isOpenNote}
 				setIsOpen={() => {
 					setIsOpenNote(false)
-					normalizeNote()
 				}}
 				title={user.note.title}
 				description={user.note.description}
@@ -272,7 +275,6 @@ const Home = () => {
 				isOpen={isOpen}
 				setIsOpen={() => {
 					setIsOpen(false)
-					normalizeNote()
 				}}
 				addNewNoteToHome={addNewNoteToHome}
 				createNoteValues={createNoteValues}
@@ -284,7 +286,7 @@ const Home = () => {
 				createNote
 				date={user.note.date}
 			/>
-		</DndContext>
+		</>
 	)
 }
 

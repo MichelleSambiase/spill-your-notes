@@ -11,6 +11,7 @@ import { signUpImage } from '@/constant/images'
 import { animationSelect } from '@/constant/theme'
 import { auth } from '@/firebase/auth'
 import { updateUserProfile } from '@/redux/userSlice'
+import { handleReadNoteValues, setCollection } from '@/services/dbNotes'
 import { ButtonLoading, FormRules } from '@/types/types'
 import { emailValidation } from '@/utils/validations'
 
@@ -152,6 +153,12 @@ const SignUp = () => {
 						name: user.displayName
 					})
 				)
+				handleReadNoteValues(user.email).then(() => {
+					setCollection({
+						email: user.email
+					})
+				})
+
 				// Redirect to Home
 				navigate('/home')
 			})
@@ -162,16 +169,18 @@ const SignUp = () => {
 	return (
 		<Container className='flex flex-col h-full justify-around md:max-w-md'>
 			<Title title='Spill your notes.' clasName='text-2xl text-center' />
-			{<img src={signUpImage} alt='Imagen ilustrativa' className='w-52 h-52 mx-auto' />}
-			<ButtonSignInGoogle
-				buttonText={loading.googleLoading ? 'Iniciando sesión...' : 'Regístrate con Google'}
-				isLoading={loading.googleLoading}
-				type='button'
-				handleFunction={signInWithGoogle}
-			/>
-			<button onClick={() => navigate('/signIn')} className='text-base font-medium leading-5 text-left sm:text-center  text-darkPurpleText hover:underline'>
-				¿Ya tenes una cuenta? ¡Iniciá sesión!
-			</button>
+			<div className='flex flex-col'>
+				{<img src={signUpImage} alt='Imagen ilustrativa' className='w-52 h-52 mx-auto' />}
+				<ButtonSignInGoogle
+					buttonText={loading.googleLoading ? 'Iniciando sesión...' : 'Regístrate con Google'}
+					isLoading={loading.googleLoading}
+					type='button'
+					handleFunction={signInWithGoogle}
+				/>
+				<button onClick={() => navigate('/signIn')} className='text-base font-medium leading-5  mt-5  text-darkPurpleText hover:underline'>
+					¿Ya tenes una cuenta? ¡Iniciá sesión!
+				</button>
+			</div>
 			<form className='w-full' onSubmit={handleSubmit}>
 				<Input
 					label='Nombre Completo'

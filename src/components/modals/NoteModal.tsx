@@ -25,7 +25,6 @@ const NoteModal = ({
 }: // handleEditNote
 IDialog) => {
 	const [selectedNoteType, setSelectedNoteType] = useState(noteTypes[1])
-
 	const dispatch = useAppDispatch()
 
 	const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -98,7 +97,7 @@ IDialog) => {
 
 								{createNote ? (
 									<>
-										{/* Tipo of note select */}
+										{/* Type of note selected */}
 										<Select
 											selectedTypeNote={selectedNoteType}
 											setSelectedTypeNote={setSelectedNoteType}

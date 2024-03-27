@@ -11,7 +11,6 @@ import { animationSelect } from '../constant/theme'
 import { auth } from '../firebase/auth'
 import { useAppDispatch } from '../redux/hooks'
 import { updateUserProfile } from '../redux/userSlice'
-import { handleReadNoteValues, setCollection } from '../services/dbNotes'
 import { ButtonLoading, FormRules } from '../types/types'
 import { handleUpdateProfile } from '../utils/updateProfile'
 
@@ -61,15 +60,6 @@ const SignIn = () => {
 								name: user.displayName
 							})
 						)
-
-						handleReadNoteValues(user.email).then((res) => {
-							if (res) {
-								setCollection({
-									email: user.email
-								})
-							}
-						})
-						// Redirecciono a Home
 						navigate('/home')
 					})
 				})
@@ -111,18 +101,6 @@ const SignIn = () => {
 						name: user.displayName
 					})
 				)
-
-				handleReadNoteValues(user.email).then((res) => {
-					console.log(user.email)
-					console.log(res)
-
-					// if (res) {
-					setCollection({
-						email: user.email
-					})
-					// }
-				})
-
 				// Redirect to Home
 				navigate('/home')
 			})
