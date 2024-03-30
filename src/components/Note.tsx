@@ -5,7 +5,7 @@ import { INote, NotesColors, TypeOfNotes } from '../types/types'
 import { humanReadable } from '../utils/noteDate'
 
 interface INoteProps extends INote {
-	handleShowNote: () => void
+	handleShowNote: (id?: string) => void
 	handleDeleteNote: (id?: string) => void
 	isOpenNote: boolean
 	isOpacityEnabled?: boolean

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { closestCorners, DndContext, DndContextProps } from '@dnd-kit/core'
 import { arrayMove, rectSortingStrategy, SortableContext } from '@dnd-kit/sortable'
 import { signOut } from 'firebase/auth'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
 
 import { searchIcon } from '@/assets/icons'
 import loadingSpinner from '@/assets/icons/loadingSpinner.svg'
@@ -12,7 +13,7 @@ import Container from '@/components/Container'
 import NoteModal from '@/components/modals/NoteModal'
 import { fieldNoteValues, noteTypes, searchNoteValues } from '@/constant/fieldsValues'
 import { animationSelect } from '@/constant/theme'
-import { auth } from '@/firebase/auth'
+import { auth, db } from '@/firebase/auth'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { logoutUser, setLoading, setNote } from '@/redux/userSlice'
 import { addNewNote, deleteNote, handleReadNoteValues } from '@/services/dbNotes'
@@ -29,6 +30,8 @@ const Home = () => {
 
 	const user = useAppSelector((state) => state.users)
 
+	const [editMyNote, setEditMyNote] = useState(user.note)
+
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
 	const bottomRef = useRef<HTMLDivElement | null>(null)
@@ -41,6 +44,8 @@ const Home = () => {
 	}, [dispatch, user.user])
 
 	useEffect(() => {
+		// console.log(typeof notes)
+
 		handleNotes()
 	}, [user.user])
 
@@ -59,6 +64,7 @@ const Home = () => {
 				if (!res) return
 
 				const myNotes = res?.notes
+
 				setNotes(myNotes || [])
 				setIsLoading(false)
 			})
@@ -68,6 +74,8 @@ const Home = () => {
 
 	// Note filter
 	const filteredNotes = useMemo(() => {
+		// if (!notes) return
+
 		const filterByTitleAndDescription = (note: INote) =>
 			note.title?.toLowerCase().includes(search.searchValues?.toLowerCase()) || note.description?.toLowerCase().includes(search.searchValues?.toLowerCase())
 
@@ -138,6 +146,75 @@ const Home = () => {
 		})
 
 		normalizeNote()
+	}
+
+	// const handleUpdateNote = async (myNote: INote) => {
+	// 	const noteToEdit = notes.find((note) => note.id === myNote.id)
+	// 	// console.log('mi notita id', myNote)
+	// 	// if (!noteToEdit) return
+	// 	const email = user.user?.email
+
+	// 	const myNotita = {
+	// 		title: myNote.title,
+	// 		description: myNote.description,
+	// 		typeOfNote: myNote.typeOfNote,
+	// 		date: new Date(),
+	// 		id: noteToEdit?.id || ''
+	// 	}
+
+	// 	// const noteData = { myNote.id, title, description, typeOfNote, date };
+	// 	const usersRef = doc(db, 'users', email || '')
+
+	// 	const snapshot = await getDoc(usersRef)
+	// 	console.log(snapshot.data()?.notes)
+
+	// 	// await updateDoc(usersRef, {
+	// 	// 	notes: [...snapshot.data(), myNote]
+	// 	// })
+
+	// 	setEditMyNote(myNotita)
+
+	// 	// setNotes()
+
+	// 	// dispatch(setNote(myNotita))
+	// 	console.log('la nota se edito correctamente', myNote)
+	// }
+
+	const handleUpdateNote = async (myNote: INote) => {
+		const email = user.user?.email
+		if (!email) return // checks if emails exits
+
+		const usersRef = doc(db, 'users', email)
+		const snapshot = await getDoc(usersRef)
+		const notesArray = snapshot.data()?.notes
+
+		if (notesArray) {
+			// Encuentra el índice del objeto que deseas editar
+			const noteIndex = notesArray.findIndex((note: INote) => note.id === myNote.id)
+			if (noteIndex === -1) return // Si no se encuentra la nota, salir de la función
+
+			// Crea una copia del array y actualiza el objeto
+			const updatedNotesArray = [...notesArray]
+			updatedNotesArray[noteIndex] = {
+				...updatedNotesArray[noteIndex],
+				title: myNote.title,
+				description: myNote.description,
+				typeOfNote: myNote.typeOfNote,
+				date: new Date()
+			}
+
+			// Escribe el array actualizado de nuevo en Firebase
+			await updateDoc(usersRef, {
+				notes: updatedNotesArray
+			})
+
+			// Actualiza el estado local si es necesario
+			setEditMyNote(updatedNotesArray[noteIndex])
+			setNotes(updatedNotesArray) // Si tienes un estado para todas las notas
+			dispatch(setNote(updatedNotesArray[noteIndex])) // Si estás usando Redux o similar
+		} else {
+			console.log('No se encontraron notas para actualizar')
+		}
 	}
 
 	const normalizeNote = () => {
@@ -221,16 +298,16 @@ const Home = () => {
 														description={note.description}
 														typeOfNote={note.typeOfNote}
 														handleShowNote={() => {
-															dispatch(
-																setNote({
-																	title: note.title,
-																	description: note.description,
-																	typeOfNote: note.typeOfNote,
-																	id: note.id,
-																	date: note.date
-																})
-															)
 															setIsOpenNote(true)
+															const notita = {
+																title: note?.title,
+																description: note?.description,
+																typeOfNote: note?.typeOfNote,
+																id: note?.id,
+																date: note?.date
+															}
+															dispatch(setNote(notita))
+															setEditMyNote(notita)
 														}}
 														handleDeleteNote={handleDeleteNote}
 														isOpenNote={isOpenNote}
@@ -260,14 +337,16 @@ const Home = () => {
 
 			{/* Show note modal */}
 			<NoteModal
+				isEditNote
 				isOpen={isOpenNote}
 				setIsOpen={() => {
 					setIsOpenNote(false)
 				}}
-				title={user.note.title}
-				description={user.note.description}
-				typeOfNote={user.note.typeOfNote}
-				date={user.note.date}
+				editMyNote={editMyNote}
+				setEditMyNote={setEditMyNote}
+				updateNote={handleUpdateNote}
+				typeOfNote={editMyNote.typeOfNote}
+				date={editMyNote.date}
 			/>
 
 			{/* Create note modal */}

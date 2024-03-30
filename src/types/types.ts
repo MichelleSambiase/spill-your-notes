@@ -6,13 +6,13 @@ interface ITitle {
 
 interface IButton {
 	buttonText: string
-	handleFunction?: () => void
+	handleFunction?: (id: string) => void
 	isLoading?: boolean
 	type: 'submit' | 'reset' | 'button' | undefined
 	icon?: string
 }
 
-interface IInput {
+interface IInput extends React.HTMLProps<HTMLInputElement> {
 	name: string
 	type: 'text' | 'textarea' | 'number' | 'password'
 	label: string
@@ -22,6 +22,7 @@ interface IInput {
 	error?: boolean | string
 	maxLength?: number
 	icon?: string
+	// onFocus?:React.FocusEventHandler<HTMLInputElement>
 	onChange: React.ChangeEventHandler<HTMLInputElement>
 	onBlur?: React.FocusEventHandler<HTMLInputElement>
 	setShowPassword?: React.Dispatch<React.SetStateAction<boolean>>
@@ -68,8 +69,14 @@ interface INote {
 interface IDialog {
 	isOpen: boolean
 	setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+	isEditNote?: boolean
+	editMyNote?: INote
+	setEditMyNote?: React.Dispatch<
+		React.SetStateAction<INote>
+> 
 	handleEditNote?: () => void
-	addNewNoteToHome?: (selectedNoteType: SelectOptions, id: string ) => void | undefined
+	addNewNoteToHome?: (selectedNoteType: SelectOptions, id: string) => void | undefined
+	updateNote?:(note: INote) => void
 	setCreateNoteValues?: React.Dispatch<
 		React.SetStateAction<{
 			titleNote: string
@@ -87,8 +94,8 @@ interface IDialog {
 		id: string
 	}
 	selectedNoteType?: SelectOptions
-	description: string
-	title: string
+	description?: string
+	title?: string
 	createNote?: boolean
 	typeOfNote?: TypeOfNotes,
 	date: Date | string
