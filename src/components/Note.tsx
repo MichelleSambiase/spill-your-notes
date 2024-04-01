@@ -5,7 +5,7 @@ import { INote, NotesColors, TypeOfNotes } from '../types/types'
 import { humanReadable } from '../utils/noteDate'
 
 interface INoteProps extends INote {
-	handleShowNote: () => void
+	handleShowNote: (id?: string) => void
 	handleDeleteNote: (id?: string) => void
 	isOpenNote: boolean
 	isOpacityEnabled?: boolean
@@ -52,7 +52,7 @@ const HeaderNote = ({ title, typeOfNote, onClick, id }: IHeaderNote) => {
 	return (
 		<div className={`${NotesColors[typeOfNote || 'houseWork']} w-full rounded-md h-full flex items-center`}>
 			<div className=' flex  w-full justify-between items-center pr-1'>
-				<h1 className={`font-medium text-xs p-3  ${typeOfNote === 'workTasks' ? 'text-white' : 'text-[#5F5F5F]'} truncate md:text-clip`}>{title}</h1>
+				<h1 className='font-medium text-xs p-3 truncate md:text-clip'>{title}</h1>
 			</div>
 
 			<button onClick={onClick} className={`${buttonHeaderStyle} mr-3 `} id={id}>

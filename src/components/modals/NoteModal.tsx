@@ -5,9 +5,9 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { noteTypes } from '../../constant/fieldsValues'
 import { animationSelect } from '../../constant/theme'
-import { useAppDispatch } from '../../redux/hooks'
+import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { setNote } from '../../redux/userSlice'
-import { IDialog, NotesColors } from '../../types/types'
+import { IDialog, INote, NotesColors } from '../../types/types'
 import { humanReadable, todayDate } from '../../utils/noteDate'
 import { Button, Input, Select } from '..'
 
@@ -16,23 +16,33 @@ const NoteModal = ({
 	isOpen,
 	setIsOpen,
 	title,
-	createNote,
+	isEditNote,
+	editMyNote,
+	setEditMyNote,
+	createNote = false,
 	addNewNoteToHome,
+	updateNote,
 	createNoteValues,
 	setCreateNoteValues,
 	date,
 	typeOfNote
-}: // handleEditNote
-IDialog) => {
+}: IDialog) => {
 	const [selectedNoteType, setSelectedNoteType] = useState(noteTypes[1])
 	const dispatch = useAppDispatch()
+	const user = useAppSelector((state) => state.users)
 
 	const handleFormChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
 		const name = e.target.name
+		const note = user.note
 
-		if (createNoteValues) setCreateNoteValues?.({ ...createNoteValues, [name]: e.target.value })
+		if (createNoteValues) {
+			setCreateNoteValues?.({ ...createNoteValues, [name]: e.target.value })
+		} else {
+			setEditMyNote?.({ ...note, [name]: e.target.value })
+		}
 	}
 
+	// Add new note
 	const handleNewNote = () => {
 		const newId = uuidv4()
 		if (createNoteValues?.titleNote === '' || createNoteValues?.descriptionNote === '') return
@@ -50,6 +60,21 @@ IDialog) => {
 		)
 
 		addNewNoteToHome?.(selectedNoteType, newId)
+	}
+
+	// Edit note
+	const handleUpdateNote = () => {
+		const updatedNote: INote = {
+			title: editMyNote?.title || '',
+			description: editMyNote?.description || '',
+			typeOfNote: user.note.typeOfNote,
+			id: user.note.id,
+			date: new Date().toISOString()
+		}
+
+		setIsOpen(false)
+		dispatch(setNote(updatedNote))
+		updateNote?.(updatedNote)
 	}
 
 	return (
@@ -84,16 +109,28 @@ IDialog) => {
 									<div className={`w-[41px] h-2 rounded-xl ${typeOfNote ? NotesColors[typeOfNote || 'allNotes'] : NotesColors[selectedNoteType.typeOfNote]}`} />
 
 									<p className='  text-xs  text-[#414141] font-medium'>{createNote ? todayDate(date) : humanReadable(date)}</p>
-									{!createNote && (
-										<>
-											{/* <button
-												onClick={handleEditNote}
-												className={` rounded-lg outline-none bg-[#C89CF4] bg-opacity-60 flex items-start justify-center text-sm text-white ring-0 active:ring-[4px] focus:ring-[#535bf22b] focus:ring-opacity-30  transition-all duration-300 p-2`}>
-												Editar nota
-											</button> */}
-										</>
-									)}
 								</div>
+								{!!isEditNote && (
+									<>
+										<Input
+											label='Escribe el Título...'
+											name='title'
+											type='text'
+											value={editMyNote?.title}
+											className={`mt-6 text-xl font-medium text-[#060606d4] border border-solid border-[#ebebeb] ${animationSelect}`}
+											onChange={(e) => handleFormChange(e)}
+										/>
+										<textarea
+											placeholder='Descripción'
+											value={editMyNote?.description}
+											onChange={(e) => handleFormChange(e)}
+											className={`mt-10 border border-solid border-[#ebebeb] rounded-xl w-full pl-3 pt-2 focus-visible:outline-none! outline-none  resize-none h-[110px] ${animationSelect}`}
+											name='description'
+											maxLength={160}
+										/>
+										<Button buttonText='Guardar nota' type='button' handleFunction={handleUpdateNote} />
+									</>
+								)}
 
 								{createNote ? (
 									<>
@@ -148,3 +185,9 @@ IDialog) => {
 }
 
 export default NoteModal
+
+// const CreateNote = () => {
+// 	return (
+
+// 	)
+// }

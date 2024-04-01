@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { closestCorners, DndContext, DndContextProps } from '@dnd-kit/core'
 import { arrayMove, rectSortingStrategy, SortableContext } from '@dnd-kit/sortable'
 import { signOut } from 'firebase/auth'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
 
 import { searchIcon } from '@/assets/icons'
 import loadingSpinner from '@/assets/icons/loadingSpinner.svg'
@@ -12,12 +13,13 @@ import Container from '@/components/Container'
 import NoteModal from '@/components/modals/NoteModal'
 import { fieldNoteValues, noteTypes, searchNoteValues } from '@/constant/fieldsValues'
 import { animationSelect } from '@/constant/theme'
-import { auth } from '@/firebase/auth'
+import { auth, db } from '@/firebase/auth'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { logoutUser, setLoading, setNote } from '@/redux/userSlice'
 import { addNewNote, deleteNote, handleReadNoteValues } from '@/services/dbNotes'
 import { INote, SelectOptions } from '@/types/types'
 
+const ERROR_SHOW_NOTES = 'No se pueden mostrar las notas, por favor inténtalo más tarde'
 const Home = () => {
 	const [isOpen, setIsOpen] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
@@ -28,6 +30,8 @@ const Home = () => {
 	const [search, setSearch] = useState(searchNoteValues)
 
 	const user = useAppSelector((state) => state.users)
+
+	const [editMyNote, setEditMyNote] = useState(user.note)
 
 	const dispatch = useAppDispatch()
 	const navigate = useNavigate()
@@ -59,10 +63,11 @@ const Home = () => {
 				if (!res) return
 
 				const myNotes = res?.notes
+
 				setNotes(myNotes || [])
 				setIsLoading(false)
 			})
-			.catch((error) => console.log(error))
+			.catch((error) => console.log(ERROR_SHOW_NOTES, error))
 			.finally(() => setIsLoading(false))
 	}
 
@@ -138,6 +143,40 @@ const Home = () => {
 		})
 
 		normalizeNote()
+	}
+
+	const handleUpdateNote = async (myNote: INote) => {
+		const email = user.user?.email
+		if (!email) return // checks if emails exits
+
+		const usersRef = doc(db, 'users', email)
+		const snapshot = await getDoc(usersRef)
+		const notesArray = snapshot.data()?.notes
+
+		if (notesArray) {
+			// Find object index that you would like to edit
+			const noteIndex = notesArray.findIndex((note: INote) => note.id === myNote.id)
+			if (noteIndex === -1) return // Si no se encuentra la nota, salir de la función
+
+			// Create array copy and update the object
+			const updatedNotesArray = [...notesArray]
+			updatedNotesArray[noteIndex] = {
+				...updatedNotesArray[noteIndex],
+				title: myNote.title,
+				description: myNote.description,
+				typeOfNote: myNote.typeOfNote,
+				date: new Date()
+			}
+
+			// write updated array in firebase
+			await updateDoc(usersRef, {
+				notes: updatedNotesArray
+			})
+
+			setEditMyNote(updatedNotesArray[noteIndex])
+			setNotes(updatedNotesArray)
+			dispatch(setNote(updatedNotesArray[noteIndex]))
+		}
 	}
 
 	const normalizeNote = () => {
@@ -221,16 +260,16 @@ const Home = () => {
 														description={note.description}
 														typeOfNote={note.typeOfNote}
 														handleShowNote={() => {
-															dispatch(
-																setNote({
-																	title: note.title,
-																	description: note.description,
-																	typeOfNote: note.typeOfNote,
-																	id: note.id,
-																	date: note.date
-																})
-															)
 															setIsOpenNote(true)
+															const noteEdited = {
+																title: note?.title,
+																description: note?.description,
+																typeOfNote: note?.typeOfNote,
+																id: note?.id,
+																date: note?.date
+															}
+															dispatch(setNote(noteEdited))
+															setEditMyNote(noteEdited)
 														}}
 														handleDeleteNote={handleDeleteNote}
 														isOpenNote={isOpenNote}
@@ -260,14 +299,16 @@ const Home = () => {
 
 			{/* Show note modal */}
 			<NoteModal
+				isEditNote
 				isOpen={isOpenNote}
 				setIsOpen={() => {
 					setIsOpenNote(false)
 				}}
-				title={user.note.title}
-				description={user.note.description}
-				typeOfNote={user.note.typeOfNote}
-				date={user.note.date}
+				editMyNote={editMyNote}
+				setEditMyNote={setEditMyNote}
+				updateNote={handleUpdateNote}
+				typeOfNote={editMyNote.typeOfNote}
+				date={editMyNote.date}
 			/>
 
 			{/* Create note modal */}
