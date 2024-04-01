@@ -71,7 +71,6 @@ const NoteModal = ({
 			id: user.note.id,
 			date: new Date().toISOString()
 		}
-		// console.log('nota editada', updatedNote)
 
 		setIsOpen(false)
 		dispatch(setNote(updatedNote))
@@ -126,7 +125,7 @@ const NoteModal = ({
 											value={editMyNote?.description}
 											onChange={(e) => handleFormChange(e)}
 											className={`mt-10 border border-solid border-[#ebebeb] rounded-xl w-full pl-3 pt-2 focus-visible:outline-none! outline-none  resize-none h-[110px] ${animationSelect}`}
-											name='descriptionNote'
+											name='description'
 											maxLength={160}
 										/>
 										<Button buttonText='Guardar nota' type='button' handleFunction={handleUpdateNote} />

@@ -129,7 +129,7 @@ type SelectOptions = {
 
 // Enum
 export enum NotesColors {
-	houseWork = 'bg-houseWork',
+	houseWork = 'bg-houseWork text-black',
 	workTasks = 'bg-workTasks',
 	newIdeas = 'bg-newIdeas',
 	personalDiary = 'bg-personalDiary',

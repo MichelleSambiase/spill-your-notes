@@ -19,6 +19,7 @@ import { logoutUser, setLoading, setNote } from '@/redux/userSlice'
 import { addNewNote, deleteNote, handleReadNoteValues } from '@/services/dbNotes'
 import { INote, SelectOptions } from '@/types/types'
 
+const ERROR_SHOW_NOTES = 'No se pueden mostrar las notas, por favor inténtalo más tarde'
 const Home = () => {
 	const [isOpen, setIsOpen] = useState(false)
 	const [isLoading, setIsLoading] = useState(true)
@@ -44,8 +45,6 @@ const Home = () => {
 	}, [dispatch, user.user])
 
 	useEffect(() => {
-		// console.log(typeof notes)
-
 		handleNotes()
 	}, [user.user])
 
@@ -68,14 +67,12 @@ const Home = () => {
 				setNotes(myNotes || [])
 				setIsLoading(false)
 			})
-			.catch((error) => console.log(error))
+			.catch((error) => console.log(ERROR_SHOW_NOTES, error))
 			.finally(() => setIsLoading(false))
 	}
 
 	// Note filter
 	const filteredNotes = useMemo(() => {
-		// if (!notes) return
-
 		const filterByTitleAndDescription = (note: INote) =>
 			note.title?.toLowerCase().includes(search.searchValues?.toLowerCase()) || note.description?.toLowerCase().includes(search.searchValues?.toLowerCase())
 
@@ -148,38 +145,6 @@ const Home = () => {
 		normalizeNote()
 	}
 
-	// const handleUpdateNote = async (myNote: INote) => {
-	// 	const noteToEdit = notes.find((note) => note.id === myNote.id)
-	// 	// console.log('mi notita id', myNote)
-	// 	// if (!noteToEdit) return
-	// 	const email = user.user?.email
-
-	// 	const myNotita = {
-	// 		title: myNote.title,
-	// 		description: myNote.description,
-	// 		typeOfNote: myNote.typeOfNote,
-	// 		date: new Date(),
-	// 		id: noteToEdit?.id || ''
-	// 	}
-
-	// 	// const noteData = { myNote.id, title, description, typeOfNote, date };
-	// 	const usersRef = doc(db, 'users', email || '')
-
-	// 	const snapshot = await getDoc(usersRef)
-	// 	console.log(snapshot.data()?.notes)
-
-	// 	// await updateDoc(usersRef, {
-	// 	// 	notes: [...snapshot.data(), myNote]
-	// 	// })
-
-	// 	setEditMyNote(myNotita)
-
-	// 	// setNotes()
-
-	// 	// dispatch(setNote(myNotita))
-	// 	console.log('la nota se edito correctamente', myNote)
-	// }
-
 	const handleUpdateNote = async (myNote: INote) => {
 		const email = user.user?.email
 		if (!email) return // checks if emails exits
@@ -189,11 +154,11 @@ const Home = () => {
 		const notesArray = snapshot.data()?.notes
 
 		if (notesArray) {
-			// Encuentra el índice del objeto que deseas editar
+			// Find object index that you would like to edit
 			const noteIndex = notesArray.findIndex((note: INote) => note.id === myNote.id)
 			if (noteIndex === -1) return // Si no se encuentra la nota, salir de la función
 
-			// Crea una copia del array y actualiza el objeto
+			// Create array copy and update the object
 			const updatedNotesArray = [...notesArray]
 			updatedNotesArray[noteIndex] = {
 				...updatedNotesArray[noteIndex],
@@ -203,17 +168,14 @@ const Home = () => {
 				date: new Date()
 			}
 
-			// Escribe el array actualizado de nuevo en Firebase
+			// write updated array in firebase
 			await updateDoc(usersRef, {
 				notes: updatedNotesArray
 			})
 
-			// Actualiza el estado local si es necesario
 			setEditMyNote(updatedNotesArray[noteIndex])
-			setNotes(updatedNotesArray) // Si tienes un estado para todas las notas
-			dispatch(setNote(updatedNotesArray[noteIndex])) // Si estás usando Redux o similar
-		} else {
-			console.log('No se encontraron notas para actualizar')
+			setNotes(updatedNotesArray)
+			dispatch(setNote(updatedNotesArray[noteIndex]))
 		}
 	}
 
@@ -299,15 +261,15 @@ const Home = () => {
 														typeOfNote={note.typeOfNote}
 														handleShowNote={() => {
 															setIsOpenNote(true)
-															const notita = {
+															const noteEdited = {
 																title: note?.title,
 																description: note?.description,
 																typeOfNote: note?.typeOfNote,
 																id: note?.id,
 																date: note?.date
 															}
-															dispatch(setNote(notita))
-															setEditMyNote(notita)
+															dispatch(setNote(noteEdited))
+															setEditMyNote(noteEdited)
 														}}
 														handleDeleteNote={handleDeleteNote}
 														isOpenNote={isOpenNote}
