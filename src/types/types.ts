@@ -6,7 +6,7 @@ interface ITitle {
 
 interface IButton {
 	buttonText: string
-	handleFunction?: (id: string) => void
+	handleFunction?: () => void
 	isLoading?: boolean
 	type: 'submit' | 'reset' | 'button' | undefined
 	icon?: string
