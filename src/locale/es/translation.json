@@ -1,0 +1,28 @@
+{
+
+		"title": "¡Escupe tus notas!",
+		"google": "Regístrate con Google",
+		"my_account": "¿Ya tienes una cuenta? Inicia sesión",
+		"password": "contraseña",
+		"create_account": "Crear cuenta",
+    "full_name": "Nombre completo",
+    "email": "Email",
+    "repeat_password": "repetir contraseña",
+    "google_login": "Inicia sesion con Google",
+    "login": "Iniciar sesíon",
+    "require_fields": "Todos los campos son requeridos",
+    "full_name_field_error": "El nombre es requerido",
+    "email_field_error": "El email es requerido",
+    "password_field_error": "La contraseña es requerida",
+    "repeat_password_field_error": "Repite la contraseña, por favor",
+    "email_passowrd": "Los campos email y contraseña son requeridos",
+    "crate_new_account": "¿No tienes cuenta? ¡Creála!",
+    "all_fields_sign_in_error": "Revisa tu email y/o contraseña por favor",
+    "email_error": "Revisa tu email por favor",
+    "logging_in": "Iniciando sesión...",
+    "loading": "Cargando...",
+    "log_out": "Cerrar sesión",
+    "search_notes": "Buscar notas",
+    "all_notes": "Todas las notas"
+
+}

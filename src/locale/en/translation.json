@@ -1,0 +1,28 @@
+{
+
+		"title": "Spill your notes",
+		"google": "Register with Google",
+		"my_account": "Do you already have an account? Log in",
+		"password": "password",
+		"create_account": "Create account",
+    "google_login": "Log in with Google",
+    "full_name": "Fullname",
+    "email": "Email",
+    "repeat_password": "repeat password",
+    "login": "Log in",
+    "require_fields": "All fields are require",
+    "full_name_field_error": "Name is require",
+    "email_field_error": "Email is require",
+    "password_field_error": "Password is require",
+    "repeat_password_field_error": "Repeat password, please",
+    "email_password": "Email and password fields are require",
+    "crate_new_account": "Don't have an account yet? Create one!",
+    "all_fields_sign_in_error": "Checks you email or password, please",
+    "email_error": "Check your email please",
+    "logging_in": "logging in...",
+    "loading": "Loading...",
+    "log_out": "Log out",
+    "search_notes": "Search notes",
+    "all_notes": "All notes"
+
+}

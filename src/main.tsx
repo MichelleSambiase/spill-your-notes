@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { store } from './redux/store'
 
+import './i18n/i18n.ts'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

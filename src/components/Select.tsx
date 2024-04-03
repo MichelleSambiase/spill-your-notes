@@ -5,12 +5,6 @@ import { noteTypes } from '../constant/fieldsValues'
 import { ISelect } from '../types/types'
 import handleAllNotes from './functionComponents/ListboxOptions'
 
-// const handleAllNotes = lazy(() =>
-// 	import('@/components/functionComponents/ListboxOptions').then((module) => {
-// 		return { default: module.default }
-// 	})
-// )
-
 const Select = ({ selectedTypeNote, setSelectedTypeNote, className, hasAllNotes = false }: ISelect) => {
 	return (
 		<Listbox as='div' value={selectedTypeNote} className='relative' onChange={setSelectedTypeNote}>

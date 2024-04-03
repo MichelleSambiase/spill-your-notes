@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react'
+import { I18nextProvider } from 'react-i18next'
 import { Route, Routes } from 'react-router-dom'
 
 import { LoadingIcon } from '@/assets/icons'
@@ -6,6 +7,8 @@ import { Title } from '@/components'
 import { auth } from '@/firebase/auth'
 import { useAppDispatch } from '@/redux/hooks'
 import { updateUserProfile } from '@/redux/userSlice'
+
+import i18n from './i18n/i18n'
 
 const Home = lazy(() => import('@/routes/home/home'))
 const SignIn = lazy(() => import('@/routes/signIn'))
@@ -33,23 +36,25 @@ const App = () => {
 	}, [dispatch])
 
 	return (
-		<Suspense fallback={<LoadingContent />}>
-			<Routes>
-				<Route path='/' element={<SignUp />} />
-				<Route path='/signIn' element={<SignIn />} />
-				<Route
-					path='/home'
-					element={
-						<ProtectedRoute>
-							<Home />
-						</ProtectedRoute>
-					}
-				/>
+		<I18nextProvider i18n={i18n}>
+			<Suspense fallback={<LoadingContent />}>
+				<Routes>
+					<Route path='/' element={<SignUp />} />
+					<Route path='/signIn' element={<SignIn />} />
+					<Route
+						path='/home'
+						element={
+							<ProtectedRoute>
+								<Home />
+							</ProtectedRoute>
+						}
+					/>
 
-				{/* ...other routes */}
-				<Route path='*' element={<NotFound />} />
-			</Routes>
-		</Suspense>
+					{/* ...other routes */}
+					<Route path='*' element={<NotFound />} />
+				</Routes>
+			</Suspense>
+		</I18nextProvider>
 	)
 }
 

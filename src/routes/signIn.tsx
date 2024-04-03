@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
@@ -27,6 +28,7 @@ const SignIn = () => {
 
 	const navigate = useNavigate()
 	const dispatch = useAppDispatch()
+	const { t } = useTranslation()
 
 	const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const name = e.target.name
@@ -41,7 +43,7 @@ const SignIn = () => {
 		if (!formValues.email && !formValues.password) {
 			setError({
 				...error,
-				errAllFields: 'Los campos email y contraseña son requeridos'
+				errAllFields: t('email_password')
 			})
 			setLoading({ ...loading, defaultLoading: false })
 		} else {
@@ -72,12 +74,12 @@ const SignIn = () => {
 					if (errorCode === invalidCredentials) {
 						setError({
 							...error,
-							errAllFields: 'Revisa tu email y/o contraseña por favor. '
+							errAllFields: t('all_fields_sign_in_error')
 						})
 					} else if (invalidEmail) {
 						setError({
 							...error,
-							errEmail: 'Revisa tu email por favor. '
+							errEmail: t('email_error')
 						})
 					}
 				})
@@ -113,14 +115,14 @@ const SignIn = () => {
 			<Title title='Spill your notes.' clasName='text-2xl text-center' />
 			<img src={signInImage} alt='Imagen ilustrativa' />
 			<ButtonSignInGoogle
-				buttonText={loading.googleLoading ? 'Iniciando sesión...' : 'Inicia sesion con Google'}
+				buttonText={loading.googleLoading ? t('logging_in') : t('google_login')}
 				isLoading={loading.googleLoading}
 				type='button'
 				handleFunction={signInWithGoogle}
 			/>
 			<form action='' className='w-full mt-3' onSubmit={handleSubmit}>
 				<Input
-					label='Email'
+					label={t('email')}
 					type='text'
 					name='email'
 					value={formValues.email}
@@ -130,7 +132,7 @@ const SignIn = () => {
 					className={`mt-3 ${animationSelect}`}
 				/>
 				<Input
-					label='contraseña'
+					label={t('password')}
 					type='password'
 					name='password'
 					value={formValues.password}
@@ -144,10 +146,10 @@ const SignIn = () => {
 				/>
 				{error && <p className='text-center text-xs font-medium text-errorInput mt-5'>{error.errAllFields}</p>}
 
-				<Button isLoading={loading.defaultLoading} buttonText='Iniciar sesión' type='submit' />
+				<Button isLoading={loading.defaultLoading} buttonText={t('login')} type='submit' />
 			</form>
 			<button onClick={() => navigate('/')} className='text-base font-medium leading-5 text-darkPurpleText mt-10'>
-				¿No tienes cuenta? ¡Creála!
+				{t('crate_new_account')}
 			</button>
 		</Container>
 	)

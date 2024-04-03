@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
 import { closestCorners, DndContext, DndContextProps } from '@dnd-kit/core'
@@ -28,6 +29,7 @@ const Home = () => {
 	const [createNoteValues, setCreateNoteValues] = useState(fieldNoteValues)
 	const [notes, setNotes] = useState<INote[]>([])
 	const [search, setSearch] = useState(searchNoteValues)
+	const { t } = useTranslation()
 
 	const user = useAppSelector((state) => state.users)
 
@@ -221,7 +223,7 @@ const Home = () => {
 					<div className={`w-full h-full flex flex-col `}>
 						<div className='md:flex md:items-center md:justify-evenly w-full mt-10'>
 							<Input
-								label='Buscar notas'
+								label={t('search_notes')}
 								type='text'
 								name='searchValues'
 								value={search.searchValues}

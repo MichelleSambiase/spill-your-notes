@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
@@ -36,6 +37,7 @@ const SignUp = () => {
 	const { password, repeatPassword, fullName, email } = formValues
 
 	const navigate = useNavigate()
+	const { t } = useTranslation()
 
 	const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const name = e.target.name
@@ -48,27 +50,27 @@ const SignUp = () => {
 			case 'fullName':
 				setError({
 					...error,
-					errFullName: !fullName ? 'El nombre es requerido.' : ''
+					errFullName: !fullName ? t('full_name_field_error') : ''
 				})
 
 				break
 			case 'email':
 				setError({
 					...error,
-					errEmail: !email ? 'El email es requerido.' : !emailValidation.test(email) ? 'El email es inválido.' : ''
+					errEmail: !email ? t('email_field_error') : !emailValidation.test(email) ? 'El email es inválido.' : ''
 				})
 				break
 			case 'password':
 				setError({
 					...error,
-					errPassword: !password ? 'La contraseña es requerida.' : ''
+					errPassword: !password ? t('password_field_error') : ''
 				})
 
 				break
 			case 'repeatPassword':
 				setError({
 					...error,
-					errRepeatPassword: !repeatPassword ? 'Repite la contraseña, por favor.' : ''
+					errRepeatPassword: !repeatPassword ? t('repeat_password_field_error') : ''
 				})
 				break
 
@@ -168,22 +170,22 @@ const SignUp = () => {
 
 	return (
 		<Container className='flex flex-col h-full justify-around md:max-w-md'>
-			<Title title='Spill your notes.' clasName='text-2xl text-center' />
+			<Title title={t('title')} clasName='text-2xl text-center' />
 			<div className='flex flex-col'>
 				{<img src={signUpImage} alt='Imagen ilustrativa' className='w-52 h-52 mx-auto' />}
 				<ButtonSignInGoogle
-					buttonText={loading.googleLoading ? 'Iniciando sesión...' : 'Regístrate con Google'}
+					buttonText={loading.googleLoading ? 'Iniciando sesión...' : `${t('google')}`}
 					isLoading={loading.googleLoading}
 					type='button'
 					handleFunction={signInWithGoogle}
 				/>
 				<button onClick={() => navigate('/signIn')} className='text-base font-medium leading-5  mt-5  text-darkPurpleText hover:underline'>
-					¿Ya tenes una cuenta? ¡Iniciá sesión!
+					{t('my_account')}
 				</button>
 			</div>
 			<form className='w-full' onSubmit={handleSubmit}>
 				<Input
-					label='Nombre Completo'
+					label={`${t('full_name')}`}
 					type='text'
 					name='fullName'
 					id='fullName'
@@ -194,7 +196,7 @@ const SignUp = () => {
 					className={`mt-3 ${animationSelect}`}
 				/>
 				<Input
-					label='Email'
+					label={`${t('Email')}`}
 					type='text'
 					name='email'
 					value={formValues.email}
@@ -204,7 +206,7 @@ const SignUp = () => {
 					className={`mt-3 ${animationSelect}`}
 				/>
 				<Input
-					label='contraseña'
+					label={`${t('password')}`}
 					type='password'
 					name='password'
 					value={formValues.password}
@@ -217,7 +219,7 @@ const SignUp = () => {
 					maxLength={25}
 				/>
 				<Input
-					label='repetir contraseña'
+					label={`${t('repeat_password')}`}
 					type='password'
 					name='repeatPassword'
 					value={formValues.repeatPassword}
@@ -236,7 +238,7 @@ const SignUp = () => {
 				/>
 
 				<p className='text-center text-xs font-medium text-errorInput mt-5'>{error.errAllFields}</p>
-				<Button isLoading={loading.defaultLoading || loading.googleLoading} buttonText='Crear cuenta' type='submit' />
+				<Button isLoading={loading.defaultLoading || loading.googleLoading} buttonText={`${t('create_account')}`} type='submit' />
 			</form>
 		</Container>
 	)
